@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base { 
+  html { scroll-behavior: smooth; } 
+  body { 
+    @apply m-0 bg-primary font-sans antialiased text-textPrimary; 
+  } 
+  * { @apply box-border; } 
+}
+
+@layer components { 
+  .section-label { @apply text-xs font-bold uppercase tracking-widest text-textSecondary; } 
+  .section-title { @apply mt-2 text-2xl font-black tracking-tight text-textPrimary; } 
+  
+  /* Generic layout structural rules */
+  .panel { @apply bg-panel border border-[#30363D]; }
+}

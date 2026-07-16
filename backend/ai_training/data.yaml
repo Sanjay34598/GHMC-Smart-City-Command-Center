@@ -1,0 +1,24 @@
+# YOLOv11 Disaster Detection Dataset Configuration
+#
+# This dataset is a merged collection from Roboflow Universe containing:
+# 1. Fire and Smoke Detection (Collection)
+# 2. FloodNet (Flood Detection)
+# 3. AIDER (Collapsed Building, Road Blockage)
+#
+# Ensure you have mapped the classes in Roboflow to exactly these 5 names
+# before downloading the dataset.
+#
+path: ../datasets/disaster_ai_merged  # Root dataset directory
+train: train/images  # Training images
+val: valid/images    # Validation images
+test: test/images    # Test images (optional)
+
+# Normalized Classes
+# Duplicates (e.g., 'wildfire', 'house_fire') must be merged into 'Fire' in Roboflow
+nc: 5
+names:
+  0: Fire
+  1: Smoke
+  2: Flood
+  3: Collapsed Building
+  4: Road Blockage

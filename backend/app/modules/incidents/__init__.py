@@ -1,0 +1,1 @@
+"""Incident reporting bounded context."""
