@@ -24,9 +24,9 @@ type Incident = {
 
 function CivicSenseContext({ incidents }: { incidents: Incident[] }) {
   const latest = incidents.length > 0 ? incidents[0] : null
-  const ward = latest?.ward || 'W-104'
-  const dept = latest?.department || 'GHMC Sanitation Dept'
-  const officerBadge = latest?.id ? `TFS-${latest.id.replace(/\D/g, '').slice(0, 2) || '89'}` : 'TFS-89'
+  const ward = latest?.ward || 'Unknown Ward'
+  const dept = latest?.department || 'Unassigned Department'
+  const officerBadge = 'Unassigned'
 
   return (
     <div className="flex flex-col h-full bg-panel">
@@ -52,7 +52,7 @@ function CivicSenseContext({ incidents }: { incidents: Incident[] }) {
             <Building className="size-5 text-info" />
             <div>
               <span className="text-xs font-bold text-textPrimary block">{dept}</span>
-              <span className="text-[10px] text-textSecondary font-mono uppercase tracking-wider">Contact: EXT-892</span>
+              <span className="text-[10px] text-textSecondary font-mono uppercase tracking-wider">Contact: Direct</span>
             </div>
           </div>
         </div>
@@ -62,7 +62,7 @@ function CivicSenseContext({ incidents }: { incidents: Incident[] }) {
           <div className="bg-primary border border-border p-3 flex gap-3 items-center">
             <ShieldCheck className="size-5 text-resolved" />
             <div>
-              <span className="text-xs font-bold text-textPrimary block">Officer Assigned</span>
+              <span className="text-xs font-bold text-textPrimary block">Officer Status</span>
               <span className="text-[10px] text-textSecondary font-mono uppercase tracking-wider">ID: {officerBadge}</span>
             </div>
           </div>
@@ -96,7 +96,7 @@ export function CivicSenseBoardPage() {
   useEffect(() => {
     async function load() {
       try {
-        const { data } = await api.get<{ items: Incident[] }>('/dashboard/incidents?is_civic_issue=true')
+        const { data } = await api.get<{ items: Incident[] }>('/dashboard/incidents')
         setIncidents(data.items)
       } catch (e) {
         console.error(e)
@@ -180,11 +180,11 @@ export function CivicSenseBoardPage() {
                       <div className="flex gap-6">
                         <div className="flex flex-col gap-0.5">
                           <span className="text-[8px] font-bold text-textSecondary uppercase tracking-widest">Ward</span>
-                          <span className="text-[10px] font-mono text-textPrimary">{inc.ward || 'W-104'}</span>
+                          <span className="text-[10px] font-mono text-textPrimary">{inc.ward || 'Unknown'}</span>
                         </div>
                         <div className="flex flex-col gap-0.5">
                           <span className="text-[8px] font-bold text-textSecondary uppercase tracking-widest">Department</span>
-                          <span className="text-[10px] font-mono text-textPrimary">{inc.department || 'GHMC-SAN'}</span>
+                          <span className="text-[10px] font-mono text-textPrimary">{inc.department || 'Unassigned'}</span>
                         </div>
                         <div className="flex flex-col gap-0.5">
                           <span className="text-[8px] font-bold text-textSecondary uppercase tracking-widest">Status</span>

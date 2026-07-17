@@ -23,9 +23,10 @@ export function NotificationCenter() {
 
   useWebSocket(`${WS_BASE_URL}/incidents`, {
     onMessage: (event) => {
+      const notification = event as Notification;
       // 1. Show Toast
-      const icon = event.severity === 'Critical' ? '🚨' : event.severity === 'High' ? '🔥' : 'ℹ️'
-      toast(`${event.title}\n${event.message}`, {
+      const icon = notification.severity === 'Critical' ? '🚨' : notification.severity === 'High' ? '🔥' : 'ℹ️'
+      toast(`${notification.title}\n${notification.message}`, {
         icon,
         style: {
           borderRadius: '10px',
@@ -36,7 +37,7 @@ export function NotificationCenter() {
       })
       
       // 2. Add to list
-      setNotifications(prev => [event, ...prev])
+      setNotifications(prev => [notification, ...prev])
     }
   })
 

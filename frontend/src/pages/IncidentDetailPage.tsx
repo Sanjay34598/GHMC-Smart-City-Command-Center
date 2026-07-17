@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { RootLayout } from '@/components/layout/RootLayout'
 import { getIncident, type IncidentResponse, type LLMAnalysisResponse } from '@/lib/incidents'
-import { ArrowLeft, Clock, ShieldAlert, CheckCircle, Activity, Crosshair, ShieldCheck, Truck, FileText } from 'lucide-react'
+import { ArrowLeft, Clock, ShieldAlert, CheckCircle, Activity, Crosshair, ShieldCheck, Truck, FileText, Users, MessageSquare } from 'lucide-react'
 
 const lifecycleSteps = [
   'Citizen Report',
