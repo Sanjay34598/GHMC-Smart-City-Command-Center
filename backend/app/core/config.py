@@ -6,7 +6,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     """Typed process configuration loaded from environment variables."""
 
-    PROJECT_NAME: str = "DisasterAI API"
+    PROJECT_NAME: str = "GHMC Disaster Management AI"
     VERSION: str = "0.1.0"
     API_V1_PREFIX: str = "/api/v1"
     POSTGRES_SERVER: str = "localhost"
@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     POSTGRES_USER: str = "disasterai"
     POSTGRES_PASSWORD: str = "change-me"
     BACKEND_CORS_ORIGINS: str = "http://localhost:5173"
+    allow_origin_regex=r"https://.*\.vercel\.app"
 
     # AI detection module configuration
     # These values flow into MockDetector now and YOLODetector in Phase 3.

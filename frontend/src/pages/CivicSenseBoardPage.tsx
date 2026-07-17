@@ -4,16 +4,7 @@ import { Activity, Map as MapIcon, BarChart3, Clock, MapPin, Building, ShieldChe
 import { api } from '@/lib/api'
 import { useIncidentWebSocket } from '@/hooks/useWebSocket'
 import { getImageUrl } from '@/lib/analyses'
-<h1
-  style={{
-    color: "red",
-    fontSize: "60px",
-    textAlign: "center",
-    background: "yellow",
-  }}
->
-THIS IS CIVICSENSEBOARDPAGE
-</h1>
+
 type Incident = {
   id: string
   title: string
@@ -126,7 +117,9 @@ export function CivicSenseBoardPage() {
   useEffect(() => {
     let cancelled = false
 
-    async function load() {
+    async function loadIncidents() {
+      setLoading(true)
+
       try {
         const { data } = await api.get<unknown>('/dashboard/incidents', { params: { limit: 20 } })
         if (!cancelled) {
@@ -146,7 +139,35 @@ export function CivicSenseBoardPage() {
       }
     }
 
-    load()
+    void loadIncidents()
+
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!lastUpdate) return
+
+    let cancelled = false
+
+    async function refreshIncidents() {
+      try {
+        const { data } = await api.get<unknown>('/dashboard/incidents', { params: { limit: 20 } })
+        if (!cancelled) {
+          setIncidents(normalizeIncidentList(data))
+          setError(null)
+        }
+      } catch (e) {
+        console.error(e)
+        if (!cancelled) {
+          setError('Unable to load Civic Sense reports right now.')
+        }
+      }
+    }
+
+    void refreshIncidents()
+
     return () => {
       cancelled = true
     }
