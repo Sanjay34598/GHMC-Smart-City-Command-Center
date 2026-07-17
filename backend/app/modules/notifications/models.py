@@ -8,10 +8,10 @@ from app.db.base import Base
 class Notification(Base):
     """Database model for user notifications."""
     
-    __tablename__ = "notification"
+    __tablename__ = "notifications"
 
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
-    incident_id = Column(String, ForeignKey("incident.id", ondelete="CASCADE"), nullable=False, index=True)
+    incident_id = Column(String, ForeignKey("incidents.id", ondelete="CASCADE"), nullable=False, index=True)
     title = Column(String(255), nullable=False)
     message = Column(String(1000), nullable=False)
     severity = Column(String(50), nullable=False)

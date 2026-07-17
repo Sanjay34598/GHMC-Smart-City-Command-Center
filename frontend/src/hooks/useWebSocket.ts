@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { WS_BASE_URL } from '@/constants/site'
 
 type WebSocketOptions = {
   onMessage?: (data: unknown) => void
@@ -71,7 +72,7 @@ export function useWebSocket(url: string, options: WebSocketOptions = {}) {
 export function useIncidentWebSocket() {
   const [lastUpdate, setLastUpdate] = useState<number>(0)
   
-  useWebSocket('ws://localhost:8000/api/v1/incidents/ws', {
+  useWebSocket(`${WS_BASE_URL}/incidents`, {
     onMessage: () => setLastUpdate(Date.now())
   })
 
