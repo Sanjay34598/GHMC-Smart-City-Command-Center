@@ -4,7 +4,16 @@ import { Activity, Map as MapIcon, BarChart3, Clock, MapPin, Building, ShieldChe
 import { api } from '@/lib/api'
 import { useIncidentWebSocket } from '@/hooks/useWebSocket'
 import { getImageUrl } from '@/lib/analyses'
-
+<h1
+  style={{
+    color: "red",
+    fontSize: "60px",
+    textAlign: "center",
+    background: "yellow",
+  }}
+>
+THIS IS CIVICSENSEBOARDPAGE
+</h1>
 type Incident = {
   id: string
   title: string
