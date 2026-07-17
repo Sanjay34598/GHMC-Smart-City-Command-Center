@@ -1,5 +1,5 @@
 import { RootLayout } from '@/components/layout/RootLayout'
-import { Truck, Users, Settings2, AlertTriangle, ShieldCheck, Cpu, Droplets, Flame, Package } from 'lucide-react'
+import { Truck, Settings2, AlertTriangle, ShieldCheck, Cpu, Droplets, Flame, Package } from 'lucide-react'
 
 const resources = [
   { name: 'GHMC Sanitation', total: 45, active: 38, icon: Truck, color: 'text-info' },

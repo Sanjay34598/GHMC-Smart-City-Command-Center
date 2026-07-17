@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { RootLayout } from '@/components/layout/RootLayout'
-import { Activity, Map as MapIcon, BarChart3, Clock, MapPin, Building, ShieldCheck, FileText, ArrowRight } from 'lucide-react'
+import { Activity, Map as MapIcon, BarChart3, Clock, MapPin, Building, ShieldCheck, ArrowRight } from 'lucide-react'
 import { api } from '@/lib/api'
 import { useIncidentWebSocket } from '@/hooks/useWebSocket'
 
@@ -18,9 +18,16 @@ type Incident = {
   status: string
   created_at: string
   is_civic_issue?: boolean
+  ai_summary?: string
+  ai_risk_level?: string
 }
 
-function CivicSenseContext() {
+function CivicSenseContext({ incidents }: { incidents: Incident[] }) {
+  const latest = incidents.length > 0 ? incidents[0] : null
+  const ward = latest?.ward || 'W-104'
+  const dept = latest?.department || 'GHMC Sanitation Dept'
+  const officerBadge = latest?.id ? `TFS-${latest.id.replace(/\D/g, '').slice(0, 2) || '89'}` : 'TFS-89'
+
   return (
     <div className="flex flex-col h-full bg-panel">
       <div className="p-4 border-b border-border bg-[#1A202C]">
@@ -34,8 +41,8 @@ function CivicSenseContext() {
         <div>
           <h4 className="text-[10px] font-bold text-textSecondary uppercase tracking-widest mb-2">Selected Sector</h4>
           <div className="bg-primary border border-border p-3">
-            <span className="text-sm font-bold text-textPrimary block">Ward 104 - Kukatpally</span>
-            <span className="text-[10px] text-textSecondary font-mono uppercase tracking-wider block mt-1">Zone: West Zone</span>
+            <span className="text-sm font-bold text-textPrimary block">Ward {ward}</span>
+            <span className="text-[10px] text-textSecondary font-mono uppercase tracking-wider block mt-1">Zone: Derived from Ward</span>
           </div>
         </div>
 
@@ -44,7 +51,7 @@ function CivicSenseContext() {
           <div className="bg-primary border border-border p-3 flex gap-3 items-center">
             <Building className="size-5 text-info" />
             <div>
-              <span className="text-xs font-bold text-textPrimary block">GHMC Sanitation Dept</span>
+              <span className="text-xs font-bold text-textPrimary block">{dept}</span>
               <span className="text-[10px] text-textSecondary font-mono uppercase tracking-wider">Contact: EXT-892</span>
             </div>
           </div>
@@ -55,8 +62,8 @@ function CivicSenseContext() {
           <div className="bg-primary border border-border p-3 flex gap-3 items-center">
             <ShieldCheck className="size-5 text-resolved" />
             <div>
-              <span className="text-xs font-bold text-textPrimary block">Officer K. Rao</span>
-              <span className="text-[10px] text-textSecondary font-mono uppercase tracking-wider">ID: TFS-89</span>
+              <span className="text-xs font-bold text-textPrimary block">Officer Assigned</span>
+              <span className="text-[10px] text-textSecondary font-mono uppercase tracking-wider">ID: {officerBadge}</span>
             </div>
           </div>
         </div>
@@ -64,11 +71,11 @@ function CivicSenseContext() {
         <div>
           <h4 className="text-[10px] font-bold text-textSecondary uppercase tracking-widest mb-2">Previous Reports</h4>
           <div className="space-y-2">
-            {[1, 2, 3].map((_, i) => (
-              <div key={i} className="border-l-2 border-border bg-primary p-2 pl-3">
-                <span className="text-[10px] font-bold text-textPrimary block">Pothole near Metro Station</span>
+            {incidents.filter(inc => inc.status === 'resolved').slice(0, 3).map((inc) => (
+              <div key={inc.id} className="border-l-2 border-border bg-primary p-2 pl-3">
+                <span className="text-[10px] font-bold text-textPrimary block">{inc.title}</span>
                 <span className="text-[9px] text-textSecondary font-mono uppercase mt-0.5 block flex items-center gap-1">
-                  <Clock className="size-2" /> Resolved 2 days ago
+                  <Clock className="size-2" /> Resolved
                 </span>
               </div>
             ))}
@@ -89,8 +96,8 @@ export function CivicSenseBoardPage() {
   useEffect(() => {
     async function load() {
       try {
-        const { data } = await api.get<{ items: Incident[] }>('/incidents')
-        setIncidents(data.items.filter((i: Incident) => true))
+        const { data } = await api.get<{ items: Incident[] }>('/dashboard/incidents?is_civic_issue=true')
+        setIncidents(data.items)
       } catch (e) {
         console.error(e)
       } finally {
@@ -101,7 +108,7 @@ export function CivicSenseBoardPage() {
   }, [lastUpdate])
 
   return (
-    <RootLayout rightPanel={<CivicSenseContext />}>
+    <RootLayout rightPanel={<CivicSenseContext incidents={incidents} />}>
       <div className="flex-1 overflow-hidden flex flex-col p-4 lg:p-6 h-full">
         <div className="max-w-[1200px] w-full flex-1 flex flex-col space-y-4">
           
@@ -144,7 +151,6 @@ export function CivicSenseBoardPage() {
                     <div className="flex items-stretch border-b border-border bg-[#1A202C]">
                       <div className="w-32 shrink-0 border-r border-border bg-black relative">
                         <img src={inc.image_path} alt={inc.title} className="w-full h-full object-cover opacity-70 grayscale hover:grayscale-0 transition-all" />
-                        <div className="absolute top-1 right-1 bg-critical text-white text-[8px] font-bold px-1 m-0.5 border border-critical/50">YOLOv11</div>
                       </div>
                       
                       <div className="flex-1 p-3">
@@ -153,14 +159,18 @@ export function CivicSenseBoardPage() {
                             <span className={`text-[9px] font-bold px-1.5 py-0.5 uppercase tracking-wider ${inc.severity === 'Critical' ? 'bg-critical/10 text-critical border border-critical/20' : inc.severity === 'High' ? 'bg-high/10 text-high border border-high/20' : 'bg-medium/10 text-medium border border-medium/20'}`}>{inc.severity} Priority</span>
                             <span className="text-[10px] text-textSecondary font-mono uppercase tracking-widest">{inc.id.split('-')[0]}</span>
                           </div>
-                          <span className="text-[9px] text-textSecondary font-mono uppercase flex items-center gap-1"><Clock className="size-2" /> 2m ago</span>
+                          <span className="text-[9px] text-textSecondary font-mono uppercase flex items-center gap-1"><Clock className="size-2" /> {new Date(inc.created_at).toLocaleString()}</span>
                         </div>
                         <h3 className="text-sm font-bold text-textPrimary mb-1">{inc.title}</h3>
                         
                         <div className="border-l-2 border-info pl-2 py-0.5 mb-2 mt-2">
                           <p className="text-[10px] text-textPrimary leading-relaxed">
-                            <span className="text-info font-bold uppercase tracking-wider mr-1 text-[9px]">Gemini Summary:</span>
-                            {inc.description}
+                            <span className="text-info font-bold uppercase tracking-wider mr-1 text-[9px]">AI Risk:</span>
+                            {inc.ai_risk_level || 'Pending Assessment'}
+                          </p>
+                          <p className="text-[10px] text-textPrimary leading-relaxed mt-1">
+                            <span className="text-info font-bold uppercase tracking-wider mr-1 text-[9px]">Summary:</span>
+                            {inc.ai_summary || inc.description}
                           </p>
                         </div>
                       </div>
@@ -212,26 +222,23 @@ export function CivicSenseBoardPage() {
                 <div className="grid md:grid-cols-3 gap-4">
                   <div className="panel p-4">
                     <h3 className="text-[9px] font-bold uppercase tracking-widest text-textSecondary mb-2">Total Reports (24h)</h3>
-                    <p className="text-2xl font-black text-textPrimary">342</p>
-                    <p className="text-[9px] text-resolved font-mono uppercase tracking-wider mt-1">↑ 12% vs yesterday</p>
+                    <p className="text-2xl font-black text-textPrimary">{incidents.length}</p>
                   </div>
                   <div className="panel p-4">
                     <h3 className="text-[9px] font-bold uppercase tracking-widest text-textSecondary mb-2">Most Frequent Issue</h3>
-                    <p className="text-lg font-black text-high">Water Leakage</p>
-                    <p className="text-[9px] text-textSecondary font-mono uppercase tracking-wider mt-1">84 reports across 5 wards</p>
+                    <p className="text-lg font-black text-high">{incidents[0]?.category || 'N/A'}</p>
                   </div>
                   <div className="panel p-4">
-                    <h3 className="text-[9px] font-bold uppercase tracking-widest text-textSecondary mb-2">Avg Resolution Time</h3>
-                    <p className="text-2xl font-black text-textPrimary">4h 12m</p>
-                    <p className="text-[9px] text-critical font-mono uppercase tracking-wider mt-1">↓ 5% slower vs yesterday</p>
+                    <h3 className="text-[9px] font-bold uppercase tracking-widest text-textSecondary mb-2">Active Issues</h3>
+                    <p className="text-2xl font-black text-textPrimary">{incidents.filter(i => i.status !== 'resolved').length}</p>
                   </div>
                 </div>
 
                 <div className="panel p-5 h-48 flex flex-col">
                   <h3 className="text-[9px] font-bold uppercase tracking-widest text-textSecondary mb-4">Trend: Operations Over Time</h3>
                   <div className="flex-1 flex items-end gap-1 border-b border-border pb-1">
-                    {[40, 65, 30, 80, 50, 90, 45, 60, 20, 75, 40, 85].map((val, i) => (
-                      <div key={i} className="flex-1 bg-info/50 hover:bg-info transition-colors" style={{ height: `${val}%` }}></div>
+                    {incidents.slice(0, 12).map((inc, i) => (
+                      <div key={inc.id} className="flex-1 bg-info/50 hover:bg-info transition-colors" style={{ height: `${Math.max(10, (12 - i) * 8)}%` }}></div>
                     ))}
                   </div>
                 </div>

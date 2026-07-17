@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
-import { useParams, Link, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { RootLayout } from '@/components/layout/RootLayout'
 import { getIncident, type IncidentResponse, type LLMAnalysisResponse } from '@/lib/incidents'
-import { ArrowLeft, Clock, ShieldAlert, CheckCircle, Activity, Crosshair, Users, MessageSquare, ShieldCheck, Truck, FileText } from 'lucide-react'
+import { ArrowLeft, Clock, ShieldAlert, CheckCircle, Activity, Crosshair, ShieldCheck, Truck, FileText } from 'lucide-react'
 
 const lifecycleSteps = [
   'Citizen Report',
@@ -22,10 +22,17 @@ type AnalysisMock = {
   }
 }
 
+type Agent = {
+  id: string
+  name: string
+  role: string
+  status: string
+}
+
 export function IncidentDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const [data, setData] = useState<{ incident: IncidentResponse; analysis: AnalysisMock | null; llm: LLMAnalysisResponse | null; agents: any[] } | null>(null)
+  const [data, setData] = useState<{ incident: IncidentResponse; analysis: AnalysisMock | null; llm: LLMAnalysisResponse | null; agents: Agent[] } | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {

@@ -1,14 +1,10 @@
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  Activity,
-  AlertTriangle,
   Building2,
-  Filter,
   Flame,
   MapPin,
   RefreshCw,
-  RotateCcw,
   Search,
   Shield,
   ShieldAlert,
@@ -28,12 +24,7 @@ const EmergencyMapView = lazy(() =>
 const SEVERITIES = ['Critical', 'High', 'Medium', 'Low']
 const CATEGORIES = ['Fire', 'Flood', 'Earthquake', 'Road Accident', 'Building Collapse', 'Landslide', 'Other']
 const STATUSES = ['reported', 'under_review', 'responding', 'resolved']
-const DATE_RANGES = [
-  { label: 'Last 24 h', days: 1 },
-  { label: 'Last 7 days', days: 7 },
-  { label: 'Last 30 days', days: 30 },
-  { label: 'All time', days: undefined },
-]
+
 const SERVICE_CATEGORIES = [
   { value: 'hospital', label: 'Hospitals', icon: Building2, color: '#06b6d4' },
   { value: 'fire_station', label: 'Fire Stations', icon: Flame, color: '#f97316' },
@@ -90,14 +81,12 @@ function Legend() {
 export function EmergencyMapPage() {
   const [incidents, setIncidents]       = useState<MapIncident[]>([])
   const [services, setServices]         = useState<EmergencyService[]>([])
-  const [loading, setLoading]           = useState(true)
   const [error, setError]               = useState<string | null>(null)
   const [filters, setFilters]           = useState<MapFilters>({})
   const [search, setSearch]             = useState('')
   const [showFilters, setShowFilters]   = useState(false)
   const [showServices, setShowServices] = useState(false)
   const [selectedId, setSelectedId]     = useState<string | null>(null)
-  const [lastRefresh, setLastRefresh]   = useState<Date>(new Date())
   const [refreshing, setRefreshing]     = useState(false)
 
   const centreRef = useRef<{ lat: number; lon: number } | null>({ lat: 17.3850, lon: 78.4867 })
@@ -106,14 +95,12 @@ export function EmergencyMapPage() {
     (currentFilters: MapFilters, silent = false) => {
       return Promise.resolve()
         .then(() => {
-          if (!silent) setLoading(true);
-          else setRefreshing(true);
+          if (silent) setRefreshing(true);
           return getMapIncidents(currentFilters);
         })
         .then((result) => {
           setIncidents(result.items);
           setError(null);
-          setLastRefresh(new Date());
           if (result.items.length > 0) {
             const lat = result.items.reduce((s, i) => s + i.latitude, 0) / result.items.length;
             const lon = result.items.reduce((s, i) => s + i.longitude, 0) / result.items.length;
@@ -122,7 +109,6 @@ export function EmergencyMapPage() {
         })
         .catch(() => setError('Failed to load incidents.'))
         .finally(() => {
-          setLoading(false);
           setRefreshing(false);
         });
     },
@@ -158,7 +144,7 @@ export function EmergencyMapPage() {
       )
     : incidents
 
-  const resetFilters = () => { setFilters({}); setSearch('') }
+
   const activeCount = [filters.severity, filters.category, filters.status, filters.days, search.trim()].filter(Boolean).length
 
   const inputCls = 'w-full border border-border bg-primary px-3 py-2 text-[10px] font-mono text-textPrimary uppercase tracking-widest placeholder:text-textSecondary focus:outline-none focus:border-info transition-colors'

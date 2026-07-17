@@ -20,14 +20,14 @@ export function IncidentMap({ incidents }: Props) {
   const center: [number, number] =
     incidents.length > 0
       ? [incidents[0].latitude, incidents[0].longitude]
-      : [20, 0]
+      : [17.3850, 78.4867] // Hyderabad coordinates as default
 
   return (
     <MapContainer
       center={center}
       zoom={incidents.length > 0 ? 5 : 2}
-      style={{ height: '100%', width: '100%', borderRadius: '0.75rem' }}
-      className="z-0"
+      style={{ height: '100%', width: '100%' }}
+      className="z-0 bg-[#0d1117]"
     >
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -46,14 +46,39 @@ export function IncidentMap({ incidents }: Props) {
           }}
         >
           <Popup>
-            <div className="min-w-[180px]">
-              <p className="font-bold text-sm">{inc.title}</p>
-              <p className="text-xs text-slate-500 mt-0.5">{inc.category} · {inc.severity}</p>
+            <div className="min-w-[200px] bg-primary text-textPrimary p-1">
+              <div className="flex justify-between items-start mb-2">
+                <span className="text-[10px] font-mono font-bold text-textSecondary uppercase tracking-widest">{inc.id}</span>
+                <span className={`text-[9px] font-bold px-1.5 py-0.5 uppercase tracking-wider ${inc.severity === 'Critical' ? 'bg-critical/10 text-critical border border-critical/20' : inc.severity === 'High' ? 'bg-high/10 text-high border border-high/20' : 'bg-medium/10 text-medium border border-medium/20'}`}>
+                  {inc.severity}
+                </span>
+              </div>
+              <p className="font-bold text-sm mb-2">{inc.title}</p>
+              
+              <div className="grid grid-cols-2 gap-2 text-[10px] mb-3">
+                <div className="flex flex-col gap-0.5">
+                  <span className="font-bold text-textSecondary uppercase tracking-widest text-[8px]">Status</span>
+                  <span className="font-mono text-high">{inc.status}</span>
+                </div>
+                <div className="flex flex-col gap-0.5">
+                  <span className="font-bold text-textSecondary uppercase tracking-widest text-[8px]">Ward</span>
+                  <span className="font-mono">{inc.ward || 'N/A'}</span>
+                </div>
+                <div className="flex flex-col gap-0.5 col-span-2">
+                  <span className="font-bold text-textSecondary uppercase tracking-widest text-[8px]">Department</span>
+                  <span className="font-mono">{inc.department || 'Unassigned'}</span>
+                </div>
+                <div className="flex flex-col gap-0.5 col-span-2">
+                  <span className="font-bold text-textSecondary uppercase tracking-widest text-[8px]">Created Time</span>
+                  <span className="font-mono text-textSecondary">{new Date(inc.created_at).toLocaleString()}</span>
+                </div>
+              </div>
+
               <Link
                 to={`/incidents/${inc.id}`}
-                className="mt-2 inline-block text-xs font-semibold text-blue-600 hover:underline"
+                className="block text-center bg-info/10 border border-info/30 text-info py-1 text-[9px] font-bold uppercase tracking-widest hover:bg-info hover:text-white transition-colors"
               >
-                View details →
+                View Incident
               </Link>
             </div>
           </Popup>

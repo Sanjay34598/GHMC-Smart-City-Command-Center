@@ -1,5 +1,4 @@
-import axios from 'axios'
-import { API_BASE_URL } from '@/constants/site'
+import { api } from '@/lib/api'
 
 export type Notification = {
   id: string
@@ -13,15 +12,15 @@ export type Notification = {
 }
 
 export async function getNotifications(): Promise<Notification[]> {
-  const { data } = await axios.get<Notification[]>(`${API_BASE_URL}/notifications`)
+  const { data } = await api.get<Notification[]>('/notifications')
   return data
 }
 
 export async function markNotificationRead(id: string): Promise<Notification> {
-  const { data } = await axios.patch<Notification>(`${API_BASE_URL}/notifications/${id}/read`)
+  const { data } = await api.patch<Notification>(`/notifications/${id}/read`)
   return data
 }
 
 export async function markAllNotificationsRead(): Promise<void> {
-  await axios.patch(`${API_BASE_URL}/notifications/read-all`)
+  await api.patch('/notifications/read-all')
 }
