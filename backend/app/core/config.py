@@ -15,7 +15,14 @@ class Settings(BaseSettings):
     POSTGRES_USER: str = "disasterai"
     POSTGRES_PASSWORD: str = "change-me"
     BACKEND_CORS_ORIGINS: str = "http://localhost:5173"
-    allow_origin_regex=r"https://.*\.vercel\.app"
+
+    @property
+    def allowed_origins(self) -> list[str]:
+      return [
+        origin.strip()
+        for origin in self.BACKEND_CORS_ORIGINS.split(",")
+        if origin.strip()
+    ]
 
     # AI detection module configuration
     # These values flow into MockDetector now and YOLODetector in Phase 3.
