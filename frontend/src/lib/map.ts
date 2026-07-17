@@ -46,6 +46,24 @@ export type EmergencyServiceResult = {
 
 // ─── API functions ────────────────────────────────────────────────────────────
 
+function normalizeMapPayload(data: unknown): { total: number; items: MapIncident[] } {
+  if (Array.isArray(data)) {
+    return { total: data.length, items: data as MapIncident[] }
+  }
+
+  if (data && typeof data === 'object') {
+    const payload = data as { total?: number; items?: unknown }
+    if (Array.isArray(payload.items)) {
+      return {
+        total: typeof payload.total === 'number' ? payload.total : payload.items.length,
+        items: payload.items as MapIncident[],
+      }
+    }
+  }
+
+  return { total: 0, items: [] }
+}
+
 export async function getMapIncidents(filters: MapFilters = {}): Promise<{
   total: number
   items: MapIncident[]
@@ -53,8 +71,8 @@ export async function getMapIncidents(filters: MapFilters = {}): Promise<{
   const params = Object.fromEntries(
     Object.entries(filters).filter(([, v]) => v !== undefined && v !== ''),
   )
-  const { data } = await api.get('/map/incidents', { params })
-  return data
+  const { data } = await api.get<unknown>('/map/incidents', { params })
+  return normalizeMapPayload(data)
 }
 
 export async function getEmergencyServices(

@@ -3,6 +3,7 @@ import { RootLayout } from '@/components/layout/RootLayout'
 import { Activity, Map as MapIcon, BarChart3, Clock, MapPin, Building, ShieldCheck, ArrowRight } from 'lucide-react'
 import { api } from '@/lib/api'
 import { useIncidentWebSocket } from '@/hooks/useWebSocket'
+import { getImageUrl } from '@/lib/analyses'
 
 type Incident = {
   id: string
@@ -20,6 +21,25 @@ type Incident = {
   is_civic_issue?: boolean
   ai_summary?: string
   ai_risk_level?: string
+}
+
+function normalizeIncidentList(payload: unknown): Incident[] {
+  if (Array.isArray(payload)) return payload as Incident[]
+
+  if (payload && typeof payload === 'object') {
+    const maybe = payload as { items?: unknown; data?: unknown }
+    const candidates = [maybe.items, maybe.data]
+
+    for (const candidate of candidates) {
+      if (Array.isArray(candidate)) return candidate as Incident[]
+      if (candidate && typeof candidate === 'object') {
+        const nested = candidate as { items?: unknown }
+        if (Array.isArray(nested.items)) return nested.items as Incident[]
+      }
+    }
+  }
+
+  return []
 }
 
 function CivicSenseContext({ incidents }: { incidents: Incident[] }) {
@@ -91,20 +111,36 @@ export function CivicSenseBoardPage() {
   const [activeTab, setActiveTab] = useState<'feed' | 'map' | 'analytics'>('feed')
   const [incidents, setIncidents] = useState<Incident[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const lastUpdate = useIncidentWebSocket()
 
   useEffect(() => {
+    let cancelled = false
+
     async function load() {
       try {
-        const { data } = await api.get<{ items: Incident[] }>('/dashboard/incidents')
-        setIncidents(data.items)
+        const { data } = await api.get<unknown>('/dashboard/incidents', { params: { limit: 20 } })
+        if (!cancelled) {
+          setIncidents(normalizeIncidentList(data))
+          setError(null)
+        }
       } catch (e) {
         console.error(e)
+        if (!cancelled) {
+          setError('Unable to load Civic Sense reports right now.')
+          setIncidents([])
+        }
       } finally {
-        setLoading(false)
+        if (!cancelled) {
+          setLoading(false)
+        }
       }
     }
+
     load()
+    return () => {
+      cancelled = true
+    }
   }, [lastUpdate])
 
   return (
@@ -145,12 +181,17 @@ export function CivicSenseBoardPage() {
             {activeTab === 'feed' && (
               <div className="absolute inset-0 flex flex-col gap-4 pr-2 overflow-y-auto pb-12">
                 {loading && <div className="text-[10px] font-mono text-textSecondary uppercase p-4">Loading operational feed...</div>}
-                
+                {!loading && error && <div className="rounded border border-critical/20 bg-critical/10 p-4 text-[10px] font-mono uppercase tracking-widest text-critical">{error}</div>}
+                {!loading && !error && incidents.length === 0 && (
+                  <div className="rounded border border-border bg-primary p-6 text-center text-[10px] font-mono uppercase tracking-widest text-textSecondary">
+                    No operational reports are available yet.
+                  </div>
+                )}
                 {!loading && incidents.map((inc) => (
                   <div key={inc.id} className="panel p-0 flex flex-col hover:border-textSecondary transition-colors">
                     <div className="flex items-stretch border-b border-border bg-[#1A202C]">
                       <div className="w-32 shrink-0 border-r border-border bg-black relative">
-                        <img src={inc.image_path} alt={inc.title} className="w-full h-full object-cover opacity-70 grayscale hover:grayscale-0 transition-all" />
+                        <img src={getImageUrl(inc.image_path || '/uploads/demo_placeholder.jpg')} alt={inc.title} className="w-full h-full object-cover opacity-70 grayscale hover:grayscale-0 transition-all" />
                       </div>
                       
                       <div className="flex-1 p-3">

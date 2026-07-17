@@ -1,4 +1,5 @@
 import { Activity, BrainCircuit, MapPinned, Radio, ShieldCheck, Workflow } from 'lucide-react'
+import { API_BASE_URL, WS_BASE_URL } from '@/lib/api'
 
 export const siteConfig = { name: 'DisasterAI', description: 'Intelligent disaster detection and emergency response.', navigation: [{ label: 'Dashboard', href: 'dashboard' }, { label: 'Emergency Map', href: 'map' }, { label: 'Capabilities', href: '#capabilities' }, { label: 'Technology', href: '#technology' }] }
 
@@ -16,6 +17,5 @@ export const workflow = [
 
 export const technologies = ['React', 'FastAPI', 'PostgreSQL', 'Tailwind CSS', 'TypeScript', 'SQLAlchemy']
 
-export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1'
-export const WS_BASE_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:8000/api/v1/ws'
+export { API_BASE_URL, WS_BASE_URL }
 

@@ -5,7 +5,7 @@
  * functions — never the raw axios instance — so auth headers, retries, and
  * error normalisation can be added in one place later.
  */
-import { api } from '@/lib/api'
+import { api, API_BASE_URL } from '@/lib/api'
 
 export type Detection = {
   label: string
@@ -70,7 +70,7 @@ export async function getAnalysis(incidentId: string): Promise<AnalysisResult | 
  * Derives the backend origin from VITE_API_BASE_URL so both values stay in sync.
  */
 export function getImageUrl(imagePath: string): string {
-  const base = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000/api/v1'
-  const origin = base.replace(/\/api\/v1\/?$/, '')
-  return `${origin}/${imagePath}`
+  const origin = API_BASE_URL.replace(/\/api\/v1\/?$/, '')
+  const cleanPath = imagePath.startsWith('/') ? imagePath.slice(1) : imagePath
+  return `${origin}/${cleanPath}`
 }
