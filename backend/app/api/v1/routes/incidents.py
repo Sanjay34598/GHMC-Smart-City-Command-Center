@@ -176,7 +176,7 @@ async def report_incident(
     notifier.trigger_event(
         incident=incident,
         event_type="INCIDENT_CREATED",
-        title="New Citizen Incident Reported",
+        title="New citizen incident received.",
         message=f"{incident.title} ({incident.category}) reported.",
     )
     return incident

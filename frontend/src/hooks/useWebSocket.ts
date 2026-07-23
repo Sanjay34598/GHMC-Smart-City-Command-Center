@@ -19,52 +19,66 @@ export function useWebSocket(url: string, options: WebSocketOptions = {}) {
     optionsRef.current = options
   }, [options])
 
-  const maxRetries = options.maxRetries ?? 5
   const reconnectInterval = options.reconnectInterval ?? 3000
 
   useEffect(() => {
+    let timeoutId: NodeJS.Timeout
+    let isComponentMounted = true
+
     function connect() {
-      if (retryCount.current >= maxRetries) {
-        console.error('WebSocket max retries reached')
-        return
-      }
+      if (!isComponentMounted) return
 
-      ws.current = new WebSocket(url)
+      try {
+        ws.current = new WebSocket(url)
 
-      ws.current.onopen = () => {
-        setIsConnected(true)
-        retryCount.current = 0
-        optionsRef.current.onConnect?.()
-      }
-
-      ws.current.onclose = () => {
-        setIsConnected(false)
-        optionsRef.current.onDisconnect?.()
-        // Simple exponential backoff
-        setTimeout(() => {
-          retryCount.current += 1
-          connect()
-        }, reconnectInterval * Math.pow(2, retryCount.current))
-      }
-
-      ws.current.onmessage = (event) => {
-        try {
-          const data = JSON.parse(event.data)
-          optionsRef.current.onMessage?.(data)
-        } catch (e) {
-          console.error('Failed to parse WebSocket message', e)
+        ws.current.onopen = () => {
+          if (!isComponentMounted) return
+          setIsConnected(true)
+          retryCount.current = 0
+          optionsRef.current.onConnect?.()
         }
+
+        ws.current.onclose = () => {
+          if (!isComponentMounted) return
+          setIsConnected(false)
+          optionsRef.current.onDisconnect?.()
+          
+          const backoff = Math.min(reconnectInterval * Math.pow(1.5, retryCount.current), 15000)
+          retryCount.current += 1
+          timeoutId = setTimeout(connect, backoff)
+        }
+
+        ws.current.onerror = (e) => {
+          console.warn('WebSocket connection error:', e)
+        }
+
+        ws.current.onmessage = (event) => {
+          if (!isComponentMounted) return
+          try {
+            const data = JSON.parse(event.data)
+            optionsRef.current.onMessage?.(data)
+          } catch (e) {
+            console.error('Failed to parse WebSocket message', e)
+          }
+        }
+      } catch (err) {
+        console.warn('WebSocket connection attempt error:', err)
+        const backoff = Math.min(reconnectInterval * Math.pow(1.5, retryCount.current), 15000)
+        retryCount.current += 1
+        timeoutId = setTimeout(connect, backoff)
       }
     }
 
     connect()
 
     return () => {
+      isComponentMounted = false
+      if (timeoutId) clearTimeout(timeoutId)
       if (ws.current) {
         ws.current.close()
       }
     }
-  }, [url, maxRetries, reconnectInterval])
+  }, [url, reconnectInterval])
 
   return { isConnected }
 }
