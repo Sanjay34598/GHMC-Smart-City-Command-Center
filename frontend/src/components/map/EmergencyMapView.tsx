@@ -79,39 +79,40 @@ function IncidentPopup({ inc }: { inc: MapIncident }) {
     Low:      'bg-green-100 text-green-700',
   }
 
+  const imageSrc = inc.image_path ? getImageUrl(inc.image_path) : getImageUrl('/uploads/demo_placeholder.jpg')
+
   return (
     <div className="min-w-[220px] max-w-[260px]">
-      {inc.image_path && (
-        <img
-          src={getImageUrl(inc.image_path)}
-          alt={inc.title}
-          className="mb-2 h-28 w-full rounded object-cover"
-          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
-        />
-      )}
-      <div className="flex items-center gap-1.5 mb-1">
+      <img
+        src={imageSrc}
+        alt={inc.title}
+        className="mb-2 h-28 w-full rounded object-cover"
+        onError={(e) => {
+          (e.target as HTMLImageElement).src = getImageUrl('/uploads/demo_placeholder.jpg')
+        }}
+      />
+      <div className="flex items-center justify-between gap-1.5 mb-1">
         <span className={`rounded-full px-2 py-0.5 text-[11px] font-bold ${badge[inc.severity] ?? 'bg-gray-100 text-gray-600'}`}>
           {inc.severity}
         </span>
-        <span className="text-[11px] text-gray-500">{inc.category}</span>
+        <span className="text-[11px] font-semibold text-gray-700">{inc.category}</span>
       </div>
       <p className="font-bold text-sm text-gray-900 leading-snug">{inc.title}</p>
-      {inc.ai_summary && (
-        <p className="mt-1 text-[11px] text-gray-600 line-clamp-2 leading-snug">{inc.ai_summary}</p>
-      )}
-      <p className="mt-1 text-[10px] text-gray-400">
-        {new Date(inc.created_at).toLocaleString()} · <span className="capitalize">{inc.status.replace('_', ' ')}</span>
-      </p>
+      <div className="mt-1 flex flex-col gap-0.5 text-[10px] text-gray-500 font-mono">
+        <p><strong>Status:</strong> <span className="capitalize">{inc.status.replace('_', ' ')}</span></p>
+        <p><strong>Ward:</strong> {inc.ward || 'General Ward'}</p>
+        <p>{new Date(inc.created_at).toLocaleString()}</p>
+      </div>
       <div className="mt-3 flex justify-between items-center border-t pt-2 border-gray-200">
         <Link
           to={`/incidents/${inc.id}`}
-          className="text-xs font-semibold text-gray-600 hover:text-gray-900 transition-colors"
+          className="text-xs font-bold text-blue-600 hover:text-blue-800 transition-colors uppercase tracking-wider"
         >
-          View details
+          View Details
         </Link>
         <button
           onClick={() => window.location.href = '/dashboard'}
-          className="text-xs font-bold bg-blue-600 text-white px-2 py-1 hover:bg-blue-700 transition-colors uppercase tracking-wider"
+          className="text-[10px] font-bold bg-blue-600 text-white px-2 py-1 hover:bg-blue-700 transition-colors uppercase tracking-wider rounded"
         >
           Dispatch Units
         </button>

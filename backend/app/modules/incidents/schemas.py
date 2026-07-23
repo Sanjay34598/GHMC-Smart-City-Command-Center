@@ -5,15 +5,22 @@ from pydantic import BaseModel, ConfigDict
 
 
 class IncidentCategory(StrEnum):
-    FIRE = "Fire"
+    ROAD_BLOCK = "Road Block"
+    ACCIDENT = "Accident"
     FLOOD = "Flood"
+    FIRE = "Fire"
+    OPEN_MANHOLE = "Open Manhole"
+    GARBAGE = "Garbage Overflow"
+    ILLEGAL_PARKING = "Illegal Parking"
+    BUILDING_COLLAPSE = "Building Collapse"
+    WATER_LEAK = "Water Leak"
+    TREE_FALLEN = "Tree Fallen"
+    FOOTPATH_ENCROACHMENT = "Footpath Encroachment"
     EARTHQUAKE = "Earthquake"
     ROAD_ACCIDENT = "Road Accident"
-    BUILDING_COLLAPSE = "Building Collapse"
     LANDSLIDE = "Landslide"
-    GARBAGE = "Garbage Overflow"
     POTHOLES = "Potholes"
-    WATER_LEAK = "Water Leakage"
+    WATER_LEAKAGE = "Water Leakage"
     SEWAGE = "Sewage Overflow"
     STREETLIGHT = "Broken Streetlight"
     OTHER = "Other"
@@ -23,6 +30,7 @@ class EmergencyLevel(StrEnum):
     LOW = "Low"
     MEDIUM = "Medium"
     HIGH = "High"
+    CRITICAL = "Critical"
 
 
 class IncidentResponse(BaseModel):
@@ -31,8 +39,8 @@ class IncidentResponse(BaseModel):
     id: str
     title: str
     description: str
-    category: IncidentCategory
-    severity: EmergencyLevel
+    category: str
+    severity: str
     latitude: float
     longitude: float
     image_path: str

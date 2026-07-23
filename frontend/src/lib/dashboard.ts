@@ -5,6 +5,15 @@ export type DashboardStats = {
   active: number
   critical: number
   resolved: number
+  pending_verification?: number
+  latest_incident?: {
+    id: string
+    title: string
+    category: string
+    severity: string
+    status: string
+    created_at: string
+  } | null
   avg_response_time: number | null
   severity_distribution: { severity: string; count: number }[]
   category_distribution: { category: string; count: number }[]

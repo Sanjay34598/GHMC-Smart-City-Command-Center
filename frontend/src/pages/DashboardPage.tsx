@@ -218,10 +218,11 @@ export function DashboardPage() {
   }, [fetchAll, lastUpdate])
 
   // ── Derived stat values ────────────────────────────────────────────────────
-  const avgResponseTime = formatResponseTime(stats?.avg_response_time ?? null)
-  const activeIncidents = stats?.active ?? 0
-  const pendingCount    = incidents.filter(i => i.status === 'pending').length
-  const criticalCount   = stats?.critical ?? 0
+  const totalIncidents = stats?.total ?? incidents.length
+  const criticalCount  = stats?.critical ?? incidents.filter(i => i.severity === 'Critical').length
+  const pendingVerificationCount = stats?.pending_verification ?? incidents.filter(i => i.status === 'Pending Verification' || i.status === 'pending' || i.status === 'reported').length
+  const resolvedCount  = stats?.resolved ?? incidents.filter(i => i.status === 'resolved').length
+  const latestIncident = stats?.latest_incident ?? (incidents.length > 0 ? incidents[0] : null)
 
   // ── Loading skeleton ───────────────────────────────────────────────────────
   if (loading) {
@@ -276,33 +277,47 @@ export function DashboardPage() {
           </div>
         )}
 
-        {/* Lightweight Operational Analytics */}
+        {/* FEATURE 5: Integrated Dashboard Metrics */}
         <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="panel p-4 flex flex-col">
             <span className="text-[10px] font-bold uppercase tracking-widest text-textSecondary mb-2 flex items-center gap-1">
-              <Clock className="size-3 text-info" /> Avg Response Time
+              <Truck className="size-3 text-info" /> Total Incidents
             </span>
-            <div className="text-2xl font-bold text-textPrimary">{avgResponseTime}</div>
+            <div className="text-2xl font-bold text-textPrimary">{totalIncidents}</div>
           </div>
           <div className="panel p-4 flex flex-col">
             <span className="text-[10px] font-bold uppercase tracking-widest text-textSecondary mb-2 flex items-center gap-1">
-              <Truck className="size-3 text-resolved" /> Active Incidents
-            </span>
-            <div className="text-2xl font-bold text-textPrimary">{activeIncidents}</div>
-          </div>
-          <div className="panel p-4 flex flex-col">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-textSecondary mb-2 flex items-center gap-1">
-              <Activity className="size-3 text-medium" /> Pending Dispatches
-            </span>
-            <div className="text-2xl font-bold text-textPrimary">{pendingCount}</div>
-          </div>
-          <div className="panel p-4 flex flex-col">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-textSecondary mb-2 flex items-center gap-1">
-              <AlertTriangle className="size-3 text-critical" /> Critical Incidents
+              <AlertTriangle className="size-3 text-critical" /> Critical Count
             </span>
             <div className="text-2xl font-bold text-critical">{criticalCount}</div>
           </div>
+          <div className="panel p-4 flex flex-col">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-textSecondary mb-2 flex items-center gap-1">
+              <Activity className="size-3 text-medium" /> Pending Verification
+            </span>
+            <div className="text-2xl font-bold text-medium">{pendingVerificationCount}</div>
+          </div>
+          <div className="panel p-4 flex flex-col">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-textSecondary mb-2 flex items-center gap-1">
+              <CheckCircle2 className="size-3 text-resolved" /> Resolved Count
+            </span>
+            <div className="text-2xl font-bold text-resolved">{resolvedCount}</div>
+          </div>
         </section>
+
+        {/* FEATURE 5: Latest Incident Banner */}
+        {latestIncident && (
+          <section className="bg-panel border border-info/30 p-3.5 flex flex-col md:flex-row justify-between items-center gap-3">
+            <div className="flex items-center gap-3">
+              <span className="text-[9px] font-bold uppercase tracking-widest text-info bg-info/10 px-2 py-1 border border-info/30 shrink-0">Latest Incident</span>
+              <div>
+                <span className="text-xs font-bold text-textPrimary block">{latestIncident.title}</span>
+                <span className="text-[10px] text-textSecondary font-mono">{latestIncident.category} · {latestIncident.severity} Severity · Status: {latestIncident.status}</span>
+              </div>
+            </div>
+            <span className="text-[10px] text-textSecondary font-mono">{relativeTime(latestIncident.created_at)}</span>
+          </section>
+        )}
 
         {/* Critical Alerts Row */}
         {criticalAlerts.length > 0 && (

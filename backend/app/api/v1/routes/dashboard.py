@@ -45,6 +45,24 @@ def get_dashboard_stats(db: Session = Depends(get_db)) -> dict:
         .scalar()
         or 0
     )
+    pending_verification = (
+        db.query(func.count(Incident.id))
+        .filter(Incident.status.in_(["Pending Verification", "pending", "reported"]))
+        .scalar()
+        or 0
+    )
+
+    latest_obj = db.query(Incident).order_by(Incident.created_at.desc()).first()
+    latest_incident = None
+    if latest_obj:
+        latest_incident = {
+            "id": latest_obj.id,
+            "title": latest_obj.title,
+            "category": latest_obj.category,
+            "severity": latest_obj.severity,
+            "status": latest_obj.status,
+            "created_at": latest_obj.created_at.isoformat(),
+        }
 
     # Average processing time from completed analyses (ms → seconds)
     avg_ms = (
@@ -111,6 +129,8 @@ def get_dashboard_stats(db: Session = Depends(get_db)) -> dict:
         "active": active,
         "critical": critical,
         "resolved": resolved,
+        "pending_verification": pending_verification,
+        "latest_incident": latest_incident,
         "avg_response_time": avg_response_time,
         "severity_distribution": severity_distribution,
         "category_distribution": category_distribution,

@@ -128,6 +128,60 @@ async def create_incident(
     return incident
 
 
+@router.post(
+    "/report",
+    response_model=IncidentResponse,
+    status_code=status.HTTP_201_CREATED,
+    summary="Report a citizen incident",
+)
+async def report_incident(
+    title: Annotated[str, Form(min_length=1, max_length=160)],
+    description: Annotated[str, Form(min_length=1, max_length=5000)],
+    category: Annotated[str, Form()],
+    latitude: Annotated[float, Form(ge=-90, le=90)],
+    longitude: Annotated[float, Form(ge=-180, le=180)],
+    image: Annotated[UploadFile, File(description="JPG, PNG, or WEBP image up to 10 MB")] = None, # type: ignore
+    db: Session = Depends(get_db),
+    notifier: NotificationService = Depends(get_notification_service),
+) -> Incident:
+    """Store citizen reported incident with default Pending Verification status and Medium severity."""
+    image_path = "uploads/demo_placeholder.jpg"
+    if image and image.filename:
+        image_path = await save_incident_image(image)
+
+    incident = Incident(
+        title=title.strip(),
+        description=description.strip(),
+        category=category.strip(),
+        severity="Medium",
+        latitude=latitude,
+        longitude=longitude,
+        image_path=image_path,
+        status="Pending Verification",
+        is_civic_issue=True,
+    )
+    try:
+        db.add(incident)
+        db.commit()
+        db.refresh(incident)
+    except Exception as error:
+        db.rollback()
+        if image_path != "uploads/demo_placeholder.jpg":
+            remove_incident_image(image_path)
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Incident storage is temporarily unavailable.",
+        ) from error
+
+    notifier.trigger_event(
+        incident=incident,
+        event_type="INCIDENT_CREATED",
+        title="New Citizen Incident Reported",
+        message=f"{incident.title} ({incident.category}) reported.",
+    )
+    return incident
+
+
 @router.get(
     "/{id}",
     response_model=IncidentResponse,

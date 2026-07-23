@@ -41,6 +41,29 @@ export async function createIncident(
   return data
 }
 
+export type ReportIncidentPayload = {
+  title: string
+  category: string
+  description: string
+  latitude: number
+  longitude: number
+  image?: File | null
+}
+
+export async function reportIncident(payload: ReportIncidentPayload): Promise<IncidentResponse> {
+  const body = new FormData()
+  body.append('title', payload.title)
+  body.append('category', payload.category)
+  body.append('description', payload.description)
+  body.append('latitude', String(payload.latitude))
+  body.append('longitude', String(payload.longitude))
+  if (payload.image) {
+    body.append('image', payload.image)
+  }
+  const { data } = await api.post<IncidentResponse>('/incidents/report', body)
+  return data
+}
+
 export async function getIncident(id: string): Promise<IncidentResponse> {
   const { data } = await api.get<IncidentResponse>(`/incidents/${id}`)
   return data
