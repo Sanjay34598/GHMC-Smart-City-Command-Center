@@ -16,6 +16,7 @@ export type MapIncident = {
   category: string
   severity: string
   status: string
+  ward?: string | null
   latitude: number
   longitude: number
   image_path: string

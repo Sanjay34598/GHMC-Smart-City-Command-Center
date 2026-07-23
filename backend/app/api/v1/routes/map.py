@@ -212,6 +212,7 @@ def get_map_incidents(
                 "category": inc.category,
                 "severity": inc.severity,
                 "status": inc.status,
+                "ward": inc.ward,
                 "latitude": inc.latitude,
                 "longitude": inc.longitude,
                 "image_path": inc.image_path,

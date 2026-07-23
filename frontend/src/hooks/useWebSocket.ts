@@ -22,7 +22,7 @@ export function useWebSocket(url: string, options: WebSocketOptions = {}) {
   const reconnectInterval = options.reconnectInterval ?? 3000
 
   useEffect(() => {
-    let timeoutId: NodeJS.Timeout
+    let timeoutId: ReturnType<typeof setTimeout>
     let isComponentMounted = true
 
     function connect() {
