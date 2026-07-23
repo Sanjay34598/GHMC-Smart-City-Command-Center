@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { RootLayout } from '@/components/layout/RootLayout'
 import { getIncident, type IncidentResponse, type LLMAnalysisResponse } from '@/lib/incidents'
 import { ArrowLeft, Clock, ShieldAlert, CheckCircle, Activity, Crosshair, ShieldCheck, Truck, FileText, Users, MessageSquare } from 'lucide-react'
+import { getCategoryImage } from '@/lib/images'
 
 const lifecycleSteps = [
   'Citizen Report',
@@ -58,9 +59,7 @@ export function IncidentDetailPage() {
   if (loading) {
     return (
       <RootLayout>
-        <div className="flex h-full items-center justify-center text-[10px] text-textSecondary font-mono uppercase tracking-widest">
-          Loading Incident Data...
-        </div>
+        <div className="p-8 text-xs font-mono uppercase text-white">Loading details...</div>
       </RootLayout>
     )
   }
@@ -68,9 +67,7 @@ export function IncidentDetailPage() {
   if (!data) {
     return (
       <RootLayout>
-        <div className="flex h-full items-center justify-center text-[10px] text-critical font-mono uppercase tracking-widest">
-          Incident Not Found
-        </div>
+        <div className="p-8 text-xs font-mono uppercase text-white">Incident not found</div>
       </RootLayout>
     )
   }
@@ -86,10 +83,10 @@ export function IncidentDetailPage() {
   else if (statusLower.includes('ai') || analysis) activeStep = 1
 
   const RightContextPanel = (
-    <div className="flex flex-col h-full bg-panel text-textPrimary">
-      <div className="p-4 border-b border-border bg-[#1A202C]">
-        <h3 className="text-[10px] font-bold text-textSecondary uppercase tracking-widest flex items-center gap-2">
-          <FileText className="size-3" /> Incident Context
+    <div className="flex flex-col h-full bg-[#111111] text-white">
+      <div className="p-4 border-b border-[#2A2A2A] bg-[#181818]">
+        <h3 className="text-[10px] font-bold text-[#BDBDBD] uppercase tracking-widest flex items-center gap-2">
+          <FileText className="size-3 text-white" /> Incident Context
         </h3>
       </div>
       
@@ -97,12 +94,12 @@ export function IncidentDetailPage() {
         
         {/* Evidence */}
         <div>
-          <h4 className="text-[10px] font-bold text-textSecondary uppercase tracking-widest mb-3">Visual Evidence</h4>
-          <div className="aspect-video bg-black relative border border-border">
-            <img src={incident.image_path} alt="Evidence" className="w-full h-full object-cover opacity-80" />
+          <h4 className="text-[10px] font-bold text-[#BDBDBD] uppercase tracking-widest mb-3">Visual Evidence</h4>
+          <div className="aspect-video bg-black relative border border-[#2A2A2A] overflow-hidden group">
+            <img src={getCategoryImage(incident.category, incident.image_path)} alt="Evidence" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
             {analysis && (
-              <div className="absolute inset-0 border border-critical/50 m-2 border-dashed bg-critical/5">
-                <span className="absolute top-0 right-0 bg-critical text-white text-[8px] font-bold px-1 m-0.5">
+              <div className="absolute inset-0 border border-white/50 m-2 border-dashed bg-black/40">
+                <span className="absolute top-0 right-0 bg-white text-black text-[8px] font-bold px-1.5 py-0.5 m-0.5 uppercase tracking-wider">
                   YOLOv11: {analysis.prediction_json.detections?.[0]?.label || 'Anomaly'}
                 </span>
               </div>

@@ -247,5 +247,6 @@ export function OperationsHistoryPage() {
 
         </div>
       </div>
+    </RootLayout>
   )
 }

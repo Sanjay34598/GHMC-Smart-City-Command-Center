@@ -41,10 +41,10 @@ export function NotificationCenter() {
       toast(`${notification.title}\n${notification.message}`, {
         icon,
         style: {
-          borderRadius: '4px',
-          background: '#1A202C',
-          color: '#E2E8F0',
-          border: '1px solid #30363D',
+          borderRadius: '0px',
+          background: '#181818',
+          color: '#FFFFFF',
+          border: '1px solid #2A2A2A',
           fontSize: '11px',
           fontFamily: 'monospace'
         }
