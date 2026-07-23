@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { RootLayout } from '@/components/layout/RootLayout'
 import { Activity, Map as MapIcon, BarChart3, Clock, MapPin, Building, ShieldCheck, ArrowRight, Upload, ChevronDown, ChevronUp, CheckCircle, XCircle, AlertCircle, Compass } from 'lucide-react'
+import toast from 'react-hot-toast'
 import { api } from '@/lib/api'
 import { reportIncident } from '@/lib/incidents'
 import { useIncidentWebSocket } from '@/hooks/useWebSocket'
@@ -293,6 +294,7 @@ export function CivicSenseBoardPage() {
       setDescription('')
       setImageFile(null)
       setSuccessMessage('Incident submitted successfully.')
+      toast.success('Incident submitted successfully.')
       setFormError(null)
 
       // Reload without page refresh
