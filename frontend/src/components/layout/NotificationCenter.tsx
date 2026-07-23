@@ -18,26 +18,39 @@ export function NotificationCenter() {
   const unreadCount = notifications.filter(n => !n.is_read).length
 
   useEffect(() => {
-    getNotifications().then(setNotifications).catch(console.error)
+    getNotifications()
+      .then(items => setNotifications(items.slice(0, 20)))
+      .catch(console.error)
   }, [])
 
   useWebSocket(`${WS_BASE_URL}/incidents`, {
     onMessage: (event) => {
-      const notification = event as Notification;
-      // 1. Show Toast
-      const icon = notification.severity === 'Critical' ? '🚨' : notification.severity === 'High' ? '🔥' : 'ℹ️'
+      const notification = event as Notification
+      
+      let icon = '🚨'
+      if (notification.type === 'INCIDENT_RESOLVED' || notification.message?.includes('Resolved')) {
+        icon = '✅'
+      } else if (notification.message?.includes('Police')) {
+        icon = '🚓'
+      } else if (notification.message?.includes('Ambulance') || notification.message?.includes('Medical')) {
+        icon = '🚑'
+      } else if (notification.severity === 'Critical' || notification.title?.includes('Fire')) {
+        icon = '🔥'
+      }
+
       toast(`${notification.title}\n${notification.message}`, {
         icon,
         style: {
-          borderRadius: '10px',
-          background: '#1e293b',
-          color: '#fff',
-          border: '1px solid #334155'
+          borderRadius: '4px',
+          background: '#1A202C',
+          color: '#E2E8F0',
+          border: '1px solid #30363D',
+          fontSize: '11px',
+          fontFamily: 'monospace'
         }
       })
       
-      // 2. Add to list
-      setNotifications(prev => [notification, ...prev])
+      setNotifications(prev => [notification, ...prev].slice(0, 20))
     }
   })
 
@@ -61,15 +74,23 @@ export function NotificationCenter() {
     }
   }
 
+  const getStatusIcon = (n: Notification) => {
+    if (n.type === 'INCIDENT_RESOLVED' || n.message?.includes('Resolved')) return '✅'
+    if (n.message?.includes('Police')) return '🚓'
+    if (n.message?.includes('Ambulance') || n.message?.includes('Medical')) return '🚑'
+    if (n.title?.includes('Fire') || n.severity === 'Critical') return '🔥'
+    return '🚨'
+  }
+
   return (
     <div className="relative">
       <button 
         onClick={() => setIsOpen(!isOpen)}
-        className="relative flex items-center justify-center rounded-full p-2 text-slate-400 transition hover:bg-slate-800 hover:text-white"
+        className="relative flex items-center justify-center rounded p-2 text-textSecondary hover:bg-[#30363D] hover:text-textPrimary transition-colors"
       >
-        <Bell className="size-5" />
+        <Bell className="size-4" />
         {unreadCount > 0 && (
-          <span className="absolute right-1 top-1 flex size-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white">
+          <span className="absolute -top-0.5 -right-0.5 flex size-3.5 items-center justify-center rounded-full bg-critical text-[8px] font-bold text-white animate-pulse">
             {unreadCount > 99 ? '99+' : unreadCount}
           </span>
         )}
@@ -78,21 +99,23 @@ export function NotificationCenter() {
       <AnimatePresence>
         {isOpen && (
           <>
-            {/* Backdrop for click-outside */}
             <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
             
             <motion.div
-              initial={{ opacity: 0, y: 10, scale: 0.95 }}
+              initial={{ opacity: 0, y: 8, scale: 0.98 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 10, scale: 0.95 }}
-              className="absolute right-0 mt-2 w-80 sm:w-96 overflow-hidden rounded-xl border border-slate-700 bg-slate-900 shadow-2xl z-50"
+              exit={{ opacity: 0, y: 8, scale: 0.98 }}
+              className="absolute right-0 mt-2 w-80 sm:w-96 overflow-hidden border border-border bg-[#161B22] shadow-2xl z-50 rounded-none"
             >
-              <div className="flex items-center justify-between border-b border-slate-800 bg-slate-800/50 px-4 py-3">
-                <h3 className="font-semibold text-white">Notifications</h3>
+              <div className="flex items-center justify-between border-b border-border bg-[#1A202C] px-4 py-3">
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-textPrimary">Live Command Feed</span>
+                  <span className="text-[9px] font-mono text-textSecondary">({notifications.length}/20)</span>
+                </div>
                 {unreadCount > 0 && (
                   <button 
                     onClick={handleMarkAllRead}
-                    className="flex items-center gap-1 text-xs text-cyan-400 hover:text-cyan-300"
+                    className="flex items-center gap-1 text-[9px] font-bold text-info hover:underline uppercase tracking-wider"
                   >
                     <CheckCircle2 className="size-3" />
                     Mark all read
@@ -100,43 +123,41 @@ export function NotificationCenter() {
                 )}
               </div>
               
-              <div className="max-h-[400px] overflow-y-auto">
+              <div className="max-h-[380px] overflow-y-auto">
                 {notifications.length === 0 ? (
-                  <div className="px-4 py-8 text-center text-sm text-slate-500">
-                    No notifications yet.
+                  <div className="px-4 py-8 text-center text-xs font-mono uppercase text-textSecondary">
+                    No active notifications.
                   </div>
                 ) : (
-                  <div className="divide-y divide-slate-800">
+                  <div className="divide-y divide-border">
                     {notifications.map((n) => (
                       <Link 
                         key={n.id}
-                        to={`/incident/${n.incident_id}`}
+                        to={`/incidents/${n.incident_id}`}
                         onClick={() => setIsOpen(false)}
-                        className={`block p-4 transition hover:bg-slate-800/50 ${!n.is_read ? 'bg-slate-800/20' : ''}`}
+                        className={`block p-3 transition hover:bg-[#1A202C] ${!n.is_read ? 'bg-info/5' : ''}`}
                       >
-                        <div className="flex items-start gap-3">
-                          <div className={`mt-0.5 rounded-full p-1.5 ${n.severity === 'Critical' ? 'bg-red-500/20 text-red-500' : 'bg-cyan-500/20 text-cyan-500'}`}>
-                            <ShieldAlert className="size-4" />
-                          </div>
-                          <div className="flex-1 space-y-1">
+                        <div className="flex items-start gap-2.5">
+                          <span className="text-base shrink-0 select-none mt-0.5">{getStatusIcon(n)}</span>
+                          <div className="flex-1 min-w-0">
                             <div className="flex items-start justify-between gap-2">
-                              <p className={`text-sm ${!n.is_read ? 'font-semibold text-white' : 'text-slate-300'}`}>
+                              <p className={`text-xs font-bold ${!n.is_read ? 'text-textPrimary' : 'text-textSecondary'}`}>
                                 {n.title}
                               </p>
                               {!n.is_read && (
                                 <button 
                                   onClick={(e) => handleMarkRead(n.id, e)}
-                                  className="text-slate-500 hover:text-white"
+                                  className="text-textSecondary hover:text-textPrimary shrink-0"
                                   title="Mark as read"
                                 >
-                                  <Check className="size-3.5" />
+                                  <Check className="size-3" />
                                 </button>
                               )}
                             </div>
-                            <p className="text-xs text-slate-400 line-clamp-2">
+                            <p className="text-[10px] font-mono text-textSecondary leading-relaxed mt-0.5">
                               {n.message}
                             </p>
-                            <p className="text-[10px] text-slate-500 font-medium">
+                            <p className="text-[9px] font-mono text-info uppercase mt-1">
                               {new Date(n.created_at).toLocaleTimeString()}
                             </p>
                           </div>

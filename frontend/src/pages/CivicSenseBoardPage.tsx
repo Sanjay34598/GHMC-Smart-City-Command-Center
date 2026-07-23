@@ -127,6 +127,53 @@ function getExplainabilityReasons(inc: Incident): string[] {
   return reasons
 }
 
+function getAiCommandDecision(inc: Incident) {
+  const verification = computeAiVerification(inc)
+  const priority = inc.severity || 'Medium'
+  const confidence = `${verification.confidence}%`
+  
+  let estResponse = '8 Minutes'
+  let estResolution = '25 Minutes'
+  let depts = ['GHMC Rapid Response', 'Local Ward Office']
+  let actions = ['✓ Verify report coordinates', '✓ Dispatch field inspector', '✓ Update zone log']
+
+  if (inc.category === 'Fire' || inc.category === 'Building Collapse') {
+    estResponse = '4 Minutes'
+    estResolution = '18 Minutes'
+    depts = ['Fire Department', 'Police', 'Medical Team']
+    actions = ['✓ Dispatch nearest fire station', '✓ Close nearby roads', '✓ Notify nearby hospitals']
+  } else if (inc.category === 'Accident' || inc.category === 'Road Block') {
+    estResponse = '6 Minutes'
+    estResolution = '20 Minutes'
+    depts = ['Traffic Police', 'GHMC Engineering', 'Ambulance']
+    actions = ['✓ Alert traffic control tower', '✓ Re-route regional traffic', '✓ Clear road debris']
+  } else if (inc.category === 'Flood' || inc.category === 'Water Leak') {
+    estResponse = '10 Minutes'
+    estResolution = '35 Minutes'
+    depts = ['HMWS&SB Water Works', 'Disaster Response Force (DRF)']
+    actions = ['✓ Isolate water main valve', '✓ Deploy heavy water pumps', '✓ Issue ward advisory']
+  }
+
+  return { priority, confidence, estResponse, estResolution, depts, actions }
+}
+
+function getIncidentTimelineSteps(inc: Incident) {
+  const statusLower = (inc.status || '').toLowerCase()
+  const isResolved = statusLower === 'resolved'
+  const isDispatched = isResolved || statusLower === 'responding' || statusLower === 'dispatched'
+  const isAssigned = isDispatched || Boolean(inc.department) || statusLower === 'under_review' || statusLower === 'under review'
+  const isVerified = true
+  const isReported = true
+
+  return [
+    { label: 'Citizen Reported', active: isReported, time: new Date(inc.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) },
+    { label: 'AI Verified', active: isVerified, time: 'Auto (+1m)' },
+    { label: 'Officer Assigned', active: isAssigned, time: isAssigned ? 'Active' : 'Pending' },
+    { label: 'Resources Dispatched', active: isDispatched, time: isDispatched ? 'En Route' : 'Pending' },
+    { label: 'Incident Resolved', active: isResolved, time: isResolved ? 'Completed' : 'Pending' },
+  ]
+}
+
 function CivicSenseContext({ incidents }: { incidents: Incident[] }) {
   const latest = incidents.length > 0 ? incidents[0] : null
   const ward = latest?.ward || 'Unknown Ward'
@@ -519,7 +566,81 @@ export function CivicSenseBoardPage() {
                           <h3 className="text-sm font-bold text-textPrimary mb-1">{inc.title}</h3>
                           <p className="text-[10px] text-textSecondary leading-relaxed">{inc.description}</p>
                           
-                          {/* FEATURE 2: AI VERIFICATION PANEL */}
+                          {/* FEATURE 2: AI COMMAND DECISION */}
+                          {(() => {
+                            const aiDecision = getAiCommandDecision(inc)
+                            return (
+                              <div className="mt-3 p-3 border border-border bg-[#161B22] space-y-2">
+                                <div className="flex items-center justify-between border-b border-border/60 pb-1.5">
+                                  <span className="text-[10px] font-bold uppercase tracking-widest text-textPrimary flex items-center gap-1.5">
+                                    <ShieldCheck className="size-3.5 text-info" /> AI COMMAND DECISION
+                                  </span>
+                                  <div className="flex items-center gap-2 font-mono text-[9px]">
+                                    <span>Priority: <strong className={aiDecision.priority === 'Critical' ? 'text-critical' : aiDecision.priority === 'High' ? 'text-high' : 'text-medium'}>{aiDecision.priority}</strong></span>
+                                    <span>Confidence: <strong className="text-info">{aiDecision.confidence}</strong></span>
+                                  </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-[10px] font-mono pt-1">
+                                  <div>
+                                    <p className="text-[9px] text-textSecondary uppercase tracking-wider font-bold mb-1">Recommended Depts</p>
+                                    <ul className="space-y-0.5 text-textPrimary">
+                                      {aiDecision.depts.map((d, i) => (
+                                        <li key={i}>• {d}</li>
+                                      ))}
+                                    </ul>
+                                  </div>
+
+                                  <div>
+                                    <p className="text-[9px] text-textSecondary uppercase tracking-wider font-bold mb-1">Recommended Actions</p>
+                                    <ul className="space-y-0.5 text-resolved">
+                                      {aiDecision.actions.map((a, i) => (
+                                        <li key={i}>{a}</li>
+                                      ))}
+                                    </ul>
+                                  </div>
+
+                                  <div className="flex flex-col justify-between border-l border-border/40 pl-3">
+                                    <div>
+                                      <p className="text-[9px] text-textSecondary uppercase tracking-wider font-bold">Est Response</p>
+                                      <p className="text-xs font-bold text-info">{aiDecision.estResponse}</p>
+                                    </div>
+                                    <div className="mt-1">
+                                      <p className="text-[9px] text-textSecondary uppercase tracking-wider font-bold">Est Resolution</p>
+                                      <p className="text-xs font-bold text-resolved">{aiDecision.estResolution}</p>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            )
+                          })()}
+
+                          {/* FEATURE 3: INCIDENT RESPONSE TIMELINE */}
+                          {(() => {
+                            const timeline = getIncidentTimelineSteps(inc)
+                            return (
+                              <div className="mt-3 p-2.5 border border-border bg-[#1A202C]">
+                                <p className="text-[9px] font-bold uppercase tracking-widest text-textSecondary mb-2 flex items-center gap-1.5">
+                                  <Clock className="size-3 text-info" /> Response Timeline
+                                </p>
+                                <div className="flex items-center justify-between gap-1 overflow-x-auto text-[9px] font-mono">
+                                  {timeline.map((step, idx) => (
+                                    <div key={idx} className="flex items-center gap-1 shrink-0">
+                                      <div className={`flex flex-col items-center p-1 px-2 border ${step.active ? 'border-info/40 bg-info/10 text-textPrimary' : 'border-border bg-primary text-textSecondary opacity-50'}`}>
+                                        <span className="font-bold">{step.label}</span>
+                                        <span className="text-[8px] text-textSecondary">{step.time}</span>
+                                      </div>
+                                      {idx < timeline.length - 1 && (
+                                        <span className="text-textSecondary font-bold text-xs">↓</span>
+                                      )}
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )
+                          })()}
+
+                          {/* AI VERIFICATION PANEL */}
                           <div className="mt-3 p-2.5 border border-border bg-[#161B22]">
                             <div className="flex items-center justify-between mb-2">
                               <span className="text-[10px] font-bold uppercase tracking-widest text-textSecondary">AI Verification</span>
@@ -546,7 +667,7 @@ export function CivicSenseBoardPage() {
                             </div>
                           </div>
 
-                          {/* FEATURE 3: AI EXPLAINABILITY PANEL */}
+                          {/* AI EXPLAINABILITY PANEL */}
                           <div className="mt-2">
                             <button
                               onClick={() => toggleExplain(inc.id)}

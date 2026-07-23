@@ -262,8 +262,50 @@ export function DashboardPage() {
 
   return (
     <RootLayout>
-      <div className="p-6 max-w-[1600px] mx-auto space-y-8">
+      <div className="p-6 max-w-[1600px] mx-auto space-y-6">
         
+        {/* FEATURE 7: COMMAND CENTER STATUS BAR */}
+        <section className="bg-[#1A202C] border border-border p-4">
+          <div className="flex items-center justify-between border-b border-border/60 pb-2 mb-3">
+            <div className="flex items-center gap-2">
+              <span className="size-2 rounded-full bg-resolved animate-pulse" />
+              <h2 className="text-xs font-bold text-textPrimary uppercase tracking-widest">CITY STATUS</h2>
+            </div>
+            <span className="text-[10px] font-mono text-textSecondary uppercase">Last Updated: {new Date().toLocaleTimeString()}</span>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-7 gap-3 text-[10px] font-mono">
+            <div className="bg-primary p-2 border border-border">
+              <span className="text-[8px] font-bold text-textSecondary uppercase tracking-widest block">City Health</span>
+              <span className="text-xs font-bold text-resolved block mt-0.5">94% Operational</span>
+            </div>
+            <div className="bg-primary p-2 border border-border">
+              <span className="text-[8px] font-bold text-textSecondary uppercase tracking-widest block">Readiness</span>
+              <span className="text-xs font-bold text-info block mt-0.5">98% High</span>
+            </div>
+            <div className="bg-primary p-2 border border-border">
+              <span className="text-[8px] font-bold text-textSecondary uppercase tracking-widest block">Active Emergencies</span>
+              <span className="text-xs font-bold text-critical block mt-0.5">{criticalCount} Critical</span>
+            </div>
+            <div className="bg-primary p-2 border border-border">
+              <span className="text-[8px] font-bold text-textSecondary uppercase tracking-widest block">Resources</span>
+              <span className="text-xs font-bold text-textPrimary block mt-0.5">42 Units Ready</span>
+            </div>
+            <div className="bg-primary p-2 border border-border">
+              <span className="text-[8px] font-bold text-textSecondary uppercase tracking-widest block">Weather</span>
+              <span className="text-xs font-bold text-textPrimary block mt-0.5">31°C · Partly Cloudy</span>
+            </div>
+            <div className="bg-primary p-2 border border-border">
+              <span className="text-[8px] font-bold text-textSecondary uppercase tracking-widest block">Traffic Status</span>
+              <span className="text-xs font-bold text-medium block mt-0.5">Moderate Flow</span>
+            </div>
+            <div className="bg-primary p-2 border border-border col-span-2 md:col-span-1">
+              <span className="text-[8px] font-bold text-textSecondary uppercase tracking-widest block">Command Hub</span>
+              <span className="text-xs font-bold text-info block mt-0.5">GHMC Central</span>
+            </div>
+          </div>
+        </section>
+
         <header className="border-b border-border pb-4">
           <h1 className="text-3xl font-black uppercase tracking-tight text-textPrimary">Command Center</h1>
           <p className="text-xs font-bold text-textSecondary uppercase tracking-widest mt-1">Active Response &amp; Dispatch Coordination</p>
@@ -302,6 +344,43 @@ export function DashboardPage() {
               <CheckCircle2 className="size-3 text-resolved" /> Resolved Count
             </span>
             <div className="text-2xl font-bold text-resolved">{resolvedCount}</div>
+          </div>
+        </section>
+
+        {/* FEATURE 6: AI CITY INSIGHTS PANEL */}
+        <section className="panel p-4 bg-[#161B22] border border-info/30">
+          <div className="flex items-center justify-between border-b border-border/60 pb-2 mb-3">
+            <h3 className="text-xs font-bold text-textPrimary uppercase tracking-widest flex items-center gap-2">
+              <Activity className="size-4 text-info" /> AI City Insights
+            </h3>
+            <span className="text-[9px] font-mono text-info uppercase tracking-wider bg-info/10 px-2 py-0.5 border border-info/20">Auto-Generated Predictive Feed</span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 text-[10px] font-mono">
+            <div className="p-2.5 bg-primary border border-border border-l-2 border-l-high">
+              <p className="font-bold text-high uppercase tracking-wider text-[9px] mb-0.5">• Flood Probability Increasing</p>
+              <p className="text-textSecondary leading-relaxed">Low-elevation drainage monitoring requested in Kukatpally & Begumpet sectors.</p>
+            </div>
+            <div className="p-2.5 bg-primary border border-border border-l-2 border-l-critical">
+              <p className="font-bold text-critical uppercase tracking-wider text-[9px] mb-0.5">• Road Accidents Concentrated in North Zone</p>
+              <p className="text-textSecondary leading-relaxed">Madhapur to Gachibowli transport corridor experiencing higher collision risk.</p>
+            </div>
+            <div className="p-2.5 bg-primary border border-border border-l-2 border-l-medium">
+              <p className="font-bold text-medium uppercase tracking-wider text-[9px] mb-0.5">• Garbage Complaints Increased 12%</p>
+              <p className="text-textSecondary leading-relaxed">Sanitation dispatch queue priority raised for Ward 95 & Ward 102.</p>
+            </div>
+            <div className="p-2.5 bg-primary border border-border border-l-2 border-l-info">
+              <p className="font-bold text-info uppercase tracking-wider text-[9px] mb-0.5">• Highest Priority Ward Today</p>
+              <p className="text-textSecondary leading-relaxed">Ward 108 (Kukatpally Sector 4) has highest severity cluster weight.</p>
+            </div>
+            <div className="p-2.5 bg-primary border border-border border-l-2 border-l-resolved">
+              <p className="font-bold text-resolved uppercase tracking-wider text-[9px] mb-0.5">• Busiest Emergency Zone</p>
+              <p className="text-textSecondary leading-relaxed">Zone 4 Central Corridor - 18 resource units active on dispatch duty.</p>
+            </div>
+            <div className="p-2.5 bg-primary border border-border border-l-2 border-l-info">
+              <p className="font-bold text-info uppercase tracking-wider text-[9px] mb-0.5">• SLA Response Efficiency</p>
+              <p className="text-textSecondary leading-relaxed">Average incident acknowledge time is under 4.2 minutes citywide.</p>
+            </div>
           </div>
         </section>
 

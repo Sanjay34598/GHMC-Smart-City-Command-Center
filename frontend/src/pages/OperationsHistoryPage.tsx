@@ -12,8 +12,69 @@ const historyLog = [
   { time: '09:45', action: 'Incident Marked Resolved', source: 'Command Center' },
 ]
 
+interface OperationsArchivalRecord {
+  id: string
+  title: string
+  category: string
+  location: string
+  reportedTime: string
+  resolvedTime: string
+  responseDuration: string
+  aiConfidence: string
+  departmentsResponded: string[]
+  beforeStatus: string
+  afterStatus: string
+  imagePath: string
+}
+
+const archivedIncidents: OperationsArchivalRecord[] = [
+  {
+    id: 'INC-890',
+    title: 'Structural Wall Spalling',
+    category: 'Building Collapse',
+    location: 'Ward 108 · Kukatpally Sector 4',
+    reportedTime: '08:14 AM',
+    resolvedTime: '09:40 AM',
+    responseDuration: '1h 26m',
+    aiConfidence: '96%',
+    departmentsResponded: ['GHMC Engineering', 'Disaster Response Force (DRF)', 'Traffic Police'],
+    beforeStatus: 'Pending Verification',
+    afterStatus: 'Resolved',
+    imagePath: '/uploads/building_collapse.jpeg',
+  },
+  {
+    id: 'INC-742',
+    title: 'Main Pipeline Pressure Burst',
+    category: 'Water Leak',
+    location: 'Ward 95 · Madhapur Junction',
+    reportedTime: '06:30 AM',
+    resolvedTime: '07:45 AM',
+    responseDuration: '1h 15m',
+    aiConfidence: '94%',
+    departmentsResponded: ['HMWS&SB Water Works', 'GHMC Rapid Response'],
+    beforeStatus: 'Reported',
+    afterStatus: 'Resolved',
+    imagePath: '/uploads/water_leak.jpg',
+  },
+  {
+    id: 'INC-611',
+    title: 'Commercial Zone Fire Anomaly',
+    category: 'Fire',
+    location: 'Ward 112 · Gachibowli Area',
+    reportedTime: '02:10 AM',
+    resolvedTime: '03:05 AM',
+    responseDuration: '55m',
+    aiConfidence: '98%',
+    departmentsResponded: ['Fire Services Unit U-104', 'Police Dept', 'Emergency Ambulance'],
+    beforeStatus: 'Under Review',
+    afterStatus: 'Resolved',
+    imagePath: '/uploads/fire.jpeg',
+  },
+]
+
 export function OperationsHistoryPage() {
   const [isPlaying, setIsPlaying] = useState(false)
+  const [selectedRecord, setSelectedRecord] = useState<OperationsArchivalRecord>(archivedIncidents[0])
 
   const RightContextPanel = (
     <div className="flex flex-col h-full bg-panel text-textPrimary">
@@ -68,8 +129,8 @@ export function OperationsHistoryPage() {
           <div className="panel p-6 bg-[#1A202C]">
             <div className="flex justify-between items-start mb-6">
               <div>
-                <h2 className="text-lg font-bold text-textPrimary uppercase tracking-wider mb-1">INC-890: Structural Collapse</h2>
-                <span className="text-[10px] font-bold text-textSecondary font-mono uppercase tracking-widest">Resolved • Kukatpally • GHMC Engineering</span>
+                <h2 className="text-lg font-bold text-textPrimary uppercase tracking-wider mb-1">{selectedRecord.id}: {selectedRecord.title}</h2>
+                <span className="text-[10px] font-bold text-textSecondary font-mono uppercase tracking-widest">{selectedRecord.afterStatus} • {selectedRecord.location}</span>
               </div>
               <button onClick={() => setIsPlaying(!isPlaying)} className={`text-[10px] font-bold px-4 py-2 uppercase tracking-widest transition-colors flex items-center gap-2 ${isPlaying ? 'bg-critical/10 text-critical border border-critical/30' : 'bg-info/10 hover:bg-info text-info hover:text-white border border-info/30'}`}>
                 <Clock className="size-3" /> {isPlaying ? 'Stop Replay' : 'Initiate Playback'}
@@ -81,55 +142,101 @@ export function OperationsHistoryPage() {
                 <div className={`h-full bg-info transition-all duration-[10000ms] ${isPlaying ? 'w-full' : 'w-0'}`}></div>
               </div>
               <div className="flex justify-between mt-2 text-[10px] text-textSecondary font-mono font-bold uppercase tracking-widest">
-                <span>T-00:00</span>
-                <span>T-01:31</span>
+                <span>Reported: {selectedRecord.reportedTime}</span>
+                <span>Resolved: {selectedRecord.resolvedTime} ({selectedRecord.responseDuration})</span>
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <h3 className="text-[10px] font-bold text-textSecondary uppercase tracking-widest flex items-center gap-2 mb-3">
-                  <Camera className="size-3" /> Initial State (T-00)
+                  <Camera className="size-3" /> Initial Evidence State
                 </h3>
                 <div className="aspect-video bg-black border border-border overflow-hidden relative group">
-                  <img src="/media_af74e44b-eb9c-4457-9a53-7f8cab0ba813_1784210089576.png" alt="Before" className="w-full h-full object-cover opacity-50 grayscale group-hover:opacity-80 group-hover:grayscale-0 transition-all" />
-                  <div className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-white uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity bg-black/40">Archived Evidence</div>
+                  <img src={selectedRecord.imagePath} alt="Before" className="w-full h-full object-cover opacity-60 grayscale group-hover:opacity-100 group-hover:grayscale-0 transition-all" onError={(e) => { (e.target as HTMLImageElement).src = '/uploads/demo_placeholder.jpg' }} />
+                  <div className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-white uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity bg-black/40">Before: {selectedRecord.beforeStatus}</div>
                 </div>
               </div>
               <div>
                 <h3 className="text-[10px] font-bold text-textSecondary uppercase tracking-widest flex items-center gap-2 mb-3">
-                  <CheckCircle2 className="size-3 text-resolved" /> Resolved State (T-End)
+                  <CheckCircle2 className="size-3 text-resolved" /> Resolution Confirmation
                 </h3>
                 <div className="aspect-video bg-black border border-border overflow-hidden relative group">
-                  <img src="/media_af74e44b-eb9c-4457-9a53-7f8cab0ba813_1784210200570.png" alt="After" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
-                  <div className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-white uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity bg-black/40">Resolution Confirmation</div>
+                  <img src={selectedRecord.imagePath} alt="After" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" onError={(e) => { (e.target as HTMLImageElement).src = '/uploads/demo_placeholder.jpg' }} />
+                  <div className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-white uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity bg-black/40">After: {selectedRecord.afterStatus}</div>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-6">
-            <div className="bg-info/5 border border-info/20 p-5">
-              <h3 className="text-[10px] font-bold text-info uppercase tracking-widest flex items-center gap-2 mb-3">
-                <FileText className="size-3" /> AI Post-Mortem
-              </h3>
-              <p className="text-xs text-textPrimary leading-relaxed">
-                At 08:14, a citizen reported structural damage near Kukatpally. YOLOv11 immediately identified severe concrete spalling with 94% confidence. The Gemini LLM escalated the incident to Critical status based on historical collapse data in the region. GHMC Engineering Unit U-1042 was dispatched at 08:17, secured the perimeter, and resolved the structural risk by 09:40. No casualties reported.
-              </p>
-            </div>
+          {/* FEATURE 5: COMPLETED INCIDENTS ARCHIVAL AUDIT LIST */}
+          <section className="space-y-4">
+            <h2 className="text-xs font-bold uppercase tracking-widest text-textSecondary flex items-center gap-2">
+              <FileText className="size-4 text-info" /> Completed Incident Audit Logs
+            </h2>
 
-            <div className="panel p-5 bg-primary">
-              <h3 className="text-[10px] font-bold text-textSecondary uppercase tracking-widest flex items-center gap-2 mb-3">
-                <Navigation className="size-3 text-medium" /> Department Resolution Notes
-              </h3>
-              <p className="text-xs text-textSecondary leading-relaxed mb-4">
-                Structure was stabilized using heavy support beams. Remaining loose debris was cleared from the immediate walkway. Area cordoned off with safety tape. Structural integrity team requires a follow-up assessment within 48 hours.
-              </p>
-              <button className="text-[9px] font-bold text-info uppercase tracking-widest flex items-center gap-1 hover:text-white transition-colors">
-                Schedule Follow-up <ArrowRight className="size-2.5" />
-              </button>
+            <div className="grid grid-cols-1 gap-4">
+              {archivedIncidents.map((record) => (
+                <div 
+                  key={record.id}
+                  onClick={() => setSelectedRecord(record)}
+                  className={`panel p-4 cursor-pointer transition-all border ${selectedRecord.id === record.id ? 'border-info bg-[#1A202C]' : 'border-border bg-panel hover:border-textSecondary'}`}
+                >
+                  <div className="flex flex-col md:flex-row gap-4 items-stretch">
+                    <img
+                      src={record.imagePath}
+                      alt={record.title}
+                      className="w-full md:w-40 h-28 object-cover rounded border border-border shrink-0"
+                      onError={(e) => { (e.target as HTMLImageElement).src = '/uploads/demo_placeholder.jpg' }}
+                    />
+
+                    <div className="flex-1 flex flex-col justify-between space-y-2">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="text-[10px] font-bold font-mono text-info">{record.id}</span>
+                            <span className="text-[9px] font-bold px-1.5 py-0.5 uppercase tracking-wider bg-info/10 text-info border border-info/20">{record.category}</span>
+                            <span className="text-[9px] font-bold px-1.5 py-0.5 uppercase tracking-wider bg-resolved/10 text-resolved border border-resolved/20">{record.afterStatus}</span>
+                          </div>
+                          <h3 className="text-sm font-bold text-textPrimary">{record.title}</h3>
+                          <p className="text-[10px] font-mono text-textSecondary">{record.location}</p>
+                        </div>
+
+                        <div className="text-right font-mono text-[10px]">
+                          <span className="text-textSecondary block uppercase">AI Confidence</span>
+                          <span className="font-bold text-info text-xs">{record.aiConfidence}</span>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 pt-2 border-t border-border/60 text-[10px] font-mono">
+                        <div>
+                          <span className="text-textSecondary text-[8px] uppercase block">Reported Time</span>
+                          <span className="text-textPrimary">{record.reportedTime}</span>
+                        </div>
+                        <div>
+                          <span className="text-textSecondary text-[8px] uppercase block">Resolved Time</span>
+                          <span className="text-textPrimary">{record.resolvedTime}</span>
+                        </div>
+                        <div>
+                          <span className="text-textSecondary text-[8px] uppercase block">Response Duration</span>
+                          <span className="text-resolved font-bold">{record.responseDuration}</span>
+                        </div>
+                        <div>
+                          <span className="text-textSecondary text-[8px] uppercase block">Status Shift</span>
+                          <span className="text-textPrimary">{record.beforeStatus} → <strong className="text-resolved">{record.afterStatus}</strong></span>
+                        </div>
+                      </div>
+
+                      <div className="pt-1 flex items-center gap-1.5 text-[9px] font-mono text-textSecondary">
+                        <span className="font-bold uppercase text-info">Responded Depts:</span>
+                        <span>{record.departmentsResponded.join(' • ')}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
-          </div>
+          </section>
 
         </div>
       </div>

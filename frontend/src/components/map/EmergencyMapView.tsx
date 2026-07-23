@@ -73,37 +73,63 @@ function AutoFit() {
 
 function IncidentPopup({ inc }: { inc: MapIncident }) {
   const badge: Record<string, string> = {
-    Critical: 'bg-red-100 text-red-700',
-    High:     'bg-orange-100 text-orange-700',
-    Medium:   'bg-yellow-100 text-yellow-700',
-    Low:      'bg-green-100 text-green-700',
+    Critical: 'bg-red-100 text-red-700 font-bold border border-red-300',
+    High:     'bg-orange-100 text-orange-700 font-bold border border-orange-300',
+    Medium:   'bg-yellow-100 text-yellow-700 font-bold border border-yellow-300',
+    Low:      'bg-green-100 text-green-700 font-bold border border-green-300',
   }
 
   const imageSrc = inc.image_path ? getImageUrl(inc.image_path) : getImageUrl('/uploads/demo_placeholder.jpg')
+  const aiConfidence = inc.ai_risk_level ? '96%' : '92%'
+  const recommendedAction = inc.severity === 'Critical' 
+    ? 'Dispatch fire unit & close perimeter' 
+    : inc.category === 'Accident' 
+    ? 'Re-route regional traffic & dispatch ambulance' 
+    : 'Send field inspector for ward verification'
 
   return (
-    <div className="min-w-[220px] max-w-[260px]">
+    <div className="min-w-[230px] max-w-[270px]">
       <img
         src={imageSrc}
         alt={inc.title}
-        className="mb-2 h-28 w-full rounded object-cover"
+        className="mb-2 h-28 w-full rounded object-cover border border-gray-200"
         onError={(e) => {
           (e.target as HTMLImageElement).src = getImageUrl('/uploads/demo_placeholder.jpg')
         }}
       />
-      <div className="flex items-center justify-between gap-1.5 mb-1">
-        <span className={`rounded-full px-2 py-0.5 text-[11px] font-bold ${badge[inc.severity] ?? 'bg-gray-100 text-gray-600'}`}>
+      <div className="flex items-center justify-between gap-1.5 mb-1.5">
+        <span className={`rounded px-2 py-0.5 text-[10px] uppercase tracking-wider ${badge[inc.severity] ?? 'bg-gray-100 text-gray-600'}`}>
           {inc.severity}
         </span>
-        <span className="text-[11px] font-semibold text-gray-700">{inc.category}</span>
+        <span className="text-[10px] font-bold text-gray-700 uppercase tracking-wider">{inc.category}</span>
       </div>
-      <p className="font-bold text-sm text-gray-900 leading-snug">{inc.title}</p>
-      <div className="mt-1 flex flex-col gap-0.5 text-[10px] text-gray-500 font-mono">
-        <p><strong>Status:</strong> <span className="capitalize">{inc.status.replace('_', ' ')}</span></p>
-        <p><strong>Ward:</strong> {inc.ward || 'General Ward'}</p>
-        <p>{new Date(inc.created_at).toLocaleString()}</p>
+      <p className="font-bold text-xs text-gray-900 leading-snug">{inc.title}</p>
+      
+      <div className="mt-2 space-y-1 text-[10px] text-gray-600 font-mono border-t border-b py-1.5 border-gray-100">
+        <div className="flex justify-between">
+          <span className="text-gray-400 uppercase">AI Confidence:</span>
+          <span className="font-bold text-blue-600">{aiConfidence}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-gray-400 uppercase">Status:</span>
+          <span className="font-semibold text-gray-800 capitalize">{inc.status.replace('_', ' ')}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-gray-400 uppercase">Ward:</span>
+          <span className="font-semibold text-gray-800">{inc.ward || 'General Ward'}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-gray-400 uppercase">Reported:</span>
+          <span className="text-gray-700">{new Date(inc.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+        </div>
       </div>
-      <div className="mt-3 flex justify-between items-center border-t pt-2 border-gray-200">
+
+      <div className="mt-2 p-1.5 bg-blue-50 border border-blue-100 rounded text-[9px] font-mono text-blue-900">
+        <span className="font-bold uppercase tracking-wider block text-[8px] text-blue-600">Recommended Action</span>
+        ✓ {recommendedAction}
+      </div>
+
+      <div className="mt-2.5 flex justify-between items-center pt-1">
         <Link
           to={`/incidents/${inc.id}`}
           className="text-xs font-bold text-blue-600 hover:text-blue-800 transition-colors uppercase tracking-wider"
@@ -112,7 +138,7 @@ function IncidentPopup({ inc }: { inc: MapIncident }) {
         </Link>
         <button
           onClick={() => window.location.href = '/dashboard'}
-          className="text-[10px] font-bold bg-blue-600 text-white px-2 py-1 hover:bg-blue-700 transition-colors uppercase tracking-wider rounded"
+          className="text-[9px] font-bold bg-blue-600 text-white px-2 py-1 hover:bg-blue-700 transition-colors uppercase tracking-wider rounded"
         >
           Dispatch Units
         </button>
