@@ -69,17 +69,12 @@ function AutoFit() {
   return null
 }
 
+import { getCategoryImage } from '@/lib/images'
+
 // ─── Incident popup ───────────────────────────────────────────────────────────
 
 function IncidentPopup({ inc }: { inc: MapIncident }) {
-  const badge: Record<string, string> = {
-    Critical: 'bg-red-100 text-red-700 font-bold border border-red-300',
-    High:     'bg-orange-100 text-orange-700 font-bold border border-orange-300',
-    Medium:   'bg-yellow-100 text-yellow-700 font-bold border border-yellow-300',
-    Low:      'bg-green-100 text-green-700 font-bold border border-green-300',
-  }
-
-  const imageSrc = inc.image_path ? getImageUrl(inc.image_path) : getImageUrl('/uploads/demo_placeholder.jpg')
+  const imageSrc = getCategoryImage(inc.category, inc.image_path)
   const aiConfidence = inc.ai_risk_level ? '96%' : '92%'
   const recommendedAction = inc.severity === 'Critical' 
     ? 'Dispatch fire unit & close perimeter' 
@@ -88,57 +83,65 @@ function IncidentPopup({ inc }: { inc: MapIncident }) {
     : 'Send field inspector for ward verification'
 
   return (
-    <div className="min-w-[230px] max-w-[270px]">
-      <img
-        src={imageSrc}
-        alt={inc.title}
-        className="mb-2 h-28 w-full rounded object-cover border border-gray-200"
-        onError={(e) => {
-          (e.target as HTMLImageElement).src = getImageUrl('/uploads/demo_placeholder.jpg')
-        }}
-      />
-      <div className="flex items-center justify-between gap-1.5 mb-1.5">
-        <span className={`rounded px-2 py-0.5 text-[10px] uppercase tracking-wider ${badge[inc.severity] ?? 'bg-gray-100 text-gray-600'}`}>
-          {inc.severity}
+    <div className="min-w-[240px] max-w-[280px] p-1 bg-[#181818] text-white">
+      <div className="relative mb-2 h-32 w-full overflow-hidden border border-[#2A2A2A] rounded-none group bg-black">
+        <img
+          src={imageSrc}
+          alt={inc.title}
+          className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
+          onError={(e) => {
+            (e.target as HTMLImageElement).src = getCategoryImage(inc.category)
+          }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
+        <span className="absolute bottom-1.5 left-1.5 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider bg-black/90 text-white border border-[#2A2A2A]">
+          {inc.category}
         </span>
-        <span className="text-[10px] font-bold text-gray-700 uppercase tracking-wider">{inc.category}</span>
       </div>
-      <p className="font-bold text-xs text-gray-900 leading-snug">{inc.title}</p>
+
+      <div className="flex items-center justify-between gap-1.5 mb-1.5 font-mono">
+        <span className="px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest bg-white text-black">
+          {inc.severity} Priority
+        </span>
+        <span className="text-[10px] text-[#BDBDBD] capitalize">{inc.status.replace('_', ' ')}</span>
+      </div>
+
+      <p className="font-bold text-xs text-white leading-snug mb-2">{inc.title}</p>
       
-      <div className="mt-2 space-y-1 text-[10px] text-gray-600 font-mono border-t border-b py-1.5 border-gray-100">
+      <div className="space-y-1 text-[10px] text-[#BDBDBD] font-mono border-t border-b py-2 border-[#2A2A2A]">
         <div className="flex justify-between">
-          <span className="text-gray-400 uppercase">AI Confidence:</span>
-          <span className="font-bold text-blue-600">{aiConfidence}</span>
+          <span className="text-[#BDBDBD] uppercase">AI Confidence:</span>
+          <span className="font-bold text-white">{aiConfidence}</span>
         </div>
         <div className="flex justify-between">
-          <span className="text-gray-400 uppercase">Status:</span>
-          <span className="font-semibold text-gray-800 capitalize">{inc.status.replace('_', ' ')}</span>
+          <span className="text-[#BDBDBD] uppercase">Status:</span>
+          <span className="font-semibold text-white capitalize">{inc.status.replace('_', ' ')}</span>
         </div>
         <div className="flex justify-between">
-          <span className="text-gray-400 uppercase">Ward:</span>
-          <span className="font-semibold text-gray-800">{inc.ward || 'General Ward'}</span>
+          <span className="text-[#BDBDBD] uppercase">Ward:</span>
+          <span className="font-semibold text-white">{inc.ward || 'General Ward'}</span>
         </div>
         <div className="flex justify-between">
-          <span className="text-gray-400 uppercase">Reported:</span>
-          <span className="text-gray-700">{new Date(inc.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+          <span className="text-[#BDBDBD] uppercase">Reported:</span>
+          <span className="text-white">{new Date(inc.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
         </div>
       </div>
 
-      <div className="mt-2 p-1.5 bg-blue-50 border border-blue-100 rounded text-[9px] font-mono text-blue-900">
-        <span className="font-bold uppercase tracking-wider block text-[8px] text-blue-600">Recommended Action</span>
+      <div className="mt-2 p-2 bg-[#111111] border border-[#2A2A2A] text-[9px] font-mono text-white">
+        <span className="font-bold uppercase tracking-wider block text-[8px] text-[#BDBDBD] mb-0.5">Recommended Action</span>
         ✓ {recommendedAction}
       </div>
 
-      <div className="mt-2.5 flex justify-between items-center pt-1">
+      <div className="mt-3 flex justify-between items-center pt-1 border-t border-[#2A2A2A]">
         <Link
           to={`/incidents/${inc.id}`}
-          className="text-xs font-bold text-blue-600 hover:text-blue-800 transition-colors uppercase tracking-wider"
+          className="text-[10px] font-bold text-white hover:underline uppercase tracking-wider"
         >
           View Details
         </Link>
         <button
           onClick={() => window.location.href = '/dashboard'}
-          className="text-[9px] font-bold bg-blue-600 text-white px-2 py-1 hover:bg-blue-700 transition-colors uppercase tracking-wider rounded"
+          className="text-[9px] font-bold bg-white text-black px-3 py-1 hover:bg-neutral-200 transition-colors uppercase tracking-wider rounded-none"
         >
           Dispatch Units
         </button>

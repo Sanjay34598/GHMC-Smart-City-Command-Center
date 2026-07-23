@@ -6,6 +6,7 @@ import { api } from '@/lib/api'
 import { reportIncident } from '@/lib/incidents'
 import { useIncidentWebSocket } from '@/hooks/useWebSocket'
 import { getImageUrl } from '@/lib/analyses'
+import { getCategoryImage } from '@/lib/images'
 
 type Incident = {
   id: string
@@ -520,7 +521,7 @@ export function CivicSenseBoardPage() {
                       <button
                         type="submit"
                         disabled={submitting}
-                        className="bg-info text-white border border-info/40 px-5 py-1.5 text-[10px] font-bold uppercase tracking-widest hover:bg-info/80 transition-colors disabled:opacity-50"
+                        className="bg-white text-black font-bold uppercase tracking-widest px-6 py-2 text-[10px] hover:bg-neutral-200 transition-colors disabled:opacity-50 rounded-none shadow-sm"
                       >
                         {submitting ? 'Submitting...' : 'Submit Incident'}
                       </button>
@@ -539,31 +540,41 @@ export function CivicSenseBoardPage() {
                   const verification = computeAiVerification(inc)
                   const explainReasons = getExplainabilityReasons(inc)
                   const isExplained = Boolean(expandedExplain[inc.id])
+                  const cardImg = getCategoryImage(inc.category, inc.image_path)
+                  const glowClass = inc.severity === 'Critical' ? 'glow-critical' : inc.status === 'Resolved' ? 'glow-resolved' : 'glow-warning'
 
                   return (
-                    <div key={inc.id} className="panel p-0 flex flex-col hover:border-textSecondary transition-colors">
-                      <div className="flex items-stretch border-b border-border bg-[#1A202C]">
-                        <div className="w-36 shrink-0 border-r border-border bg-black relative">
+                    <div key={inc.id} className={`panel p-0 flex flex-col transition-colors ${glowClass}`}>
+                      <div className="flex flex-col md:flex-row items-stretch border-b border-border bg-[#111111]">
+                        {/* FEATURE 3: Large image with rounded corners, subtle border, overlay badge, and hover zoom animation */}
+                        <div className="w-full md:w-56 h-48 md:h-auto shrink-0 border-b md:border-b-0 md:border-r border-[#2A2A2A] bg-black relative overflow-hidden group">
                           <img
-                            src={getImageUrl(inc.image_path || '/uploads/demo_placeholder.jpg')}
+                            src={cardImg}
                             alt={inc.title}
-                            className="w-full h-full object-cover opacity-80 hover:opacity-100 transition-all"
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 rounded-none"
                             onError={(e) => {
-                              (e.target as HTMLImageElement).src = '/uploads/demo_placeholder.jpg'
+                              (e.target as HTMLImageElement).src = getCategoryImage(inc.category)
                             }}
                           />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
+                          <div className="absolute bottom-2 left-2">
+                            <span className="text-[9px] font-bold px-2 py-0.5 uppercase tracking-widest bg-black/90 text-white border border-[#2A2A2A]">
+                              {inc.category}
+                            </span>
+                          </div>
                         </div>
                         
-                        <div className="flex-1 p-3">
+                        <div className="flex-1 p-4 bg-[#181818]">
                           <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center gap-2">
-                              <span className={`text-[9px] font-bold px-1.5 py-0.5 uppercase tracking-wider ${inc.severity === 'Critical' ? 'bg-critical/10 text-critical border border-critical/20' : inc.severity === 'High' ? 'bg-high/10 text-high border border-high/20' : 'bg-medium/10 text-medium border border-medium/20'}`}>{inc.severity} Priority</span>
+                              <span className="text-[9px] font-bold px-2 py-0.5 uppercase tracking-wider bg-white text-black font-mono">
+                                {inc.severity} Priority
+                              </span>
                               <span className="text-[10px] text-textSecondary font-mono uppercase tracking-widest">{inc.id.split('-')[0]}</span>
-                              <span className="text-[9px] font-bold px-1.5 py-0.5 uppercase tracking-wider bg-info/10 text-info border border-info/20">{inc.category}</span>
                             </div>
-                            <span className="text-[9px] text-textSecondary font-mono uppercase flex items-center gap-1"><Clock className="size-2" /> {new Date(inc.created_at).toLocaleString()}</span>
+                            <span className="text-[9px] text-textSecondary font-mono uppercase flex items-center gap-1"><Clock className="size-3 text-white" /> {new Date(inc.created_at).toLocaleString()}</span>
                           </div>
-                          <h3 className="text-sm font-bold text-textPrimary mb-1">{inc.title}</h3>
+                          <h3 className="text-sm font-bold text-white mb-1">{inc.title}</h3>
                           <p className="text-[10px] text-textSecondary leading-relaxed">{inc.description}</p>
                           
                           {/* FEATURE 2: AI COMMAND DECISION */}
