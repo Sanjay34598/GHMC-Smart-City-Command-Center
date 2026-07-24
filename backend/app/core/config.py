@@ -14,7 +14,7 @@ class Settings(BaseSettings):
     POSTGRES_DB: str = "citypulse"
     POSTGRES_USER: str = "citypulse"
     POSTGRES_PASSWORD: str = "change-me"
-    BACKEND_CORS_ORIGINS: str = "http://localhost:5173"
+    BACKEND_CORS_ORIGINS: str = "http://localhost:5173,http://127.0.0.1:5173,http://localhost:3000,http://localhost:5174"
 
     @property
     def allowed_origins(self) -> list[str]:
