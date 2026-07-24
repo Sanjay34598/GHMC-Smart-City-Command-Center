@@ -191,12 +191,21 @@ type Props = {
 
 export function EmergencyMapView({ incidents, services, showServices }: Props) {
   return (
-    <MapContainer
-      center={[20, 0]}
-      zoom={2}
-      style={{ height: '100%', width: '100%' }}
-      className="z-0"
-    >
+    <div className="relative w-full h-full">
+      {incidents.length === 0 && (
+        <div className="absolute inset-0 z-[500] pointer-events-none flex items-center justify-center">
+          <div className="bg-[#111111]/90 border border-[#2A2A2A] text-white px-6 py-3 font-mono text-xs font-bold uppercase tracking-widest shadow-2xl">
+            No live incidents available.
+          </div>
+        </div>
+      )}
+
+      <MapContainer
+        center={[20, 0]}
+        zoom={2}
+        style={{ height: '100%', width: '100%' }}
+        className="z-0"
+      >
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -253,5 +262,6 @@ export function EmergencyMapView({ incidents, services, showServices }: Props) {
           </Marker>
         ))}
     </MapContainer>
+    </div>
   )
 }

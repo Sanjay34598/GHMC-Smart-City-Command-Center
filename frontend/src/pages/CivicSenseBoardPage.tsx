@@ -748,11 +748,12 @@ export function CivicSenseBoardPage() {
                 <div className="panel overflow-hidden border border-border">
                   <div className="grid grid-cols-12 text-[9px] font-bold text-textSecondary uppercase tracking-widest p-3 border-b border-border bg-[#1A202C]">
                     <span className="col-span-2">Image</span>
-                    <span className="col-span-4">Title</span>
+                    <span className="col-span-3">Title &amp; Location</span>
                     <span className="col-span-2">Category</span>
-                    <span className="col-span-1">AI Conf.</span>
+                    <span className="col-span-1">Priority</span>
+                    <span className="col-span-1 text-center">AI Conf.</span>
                     <span className="col-span-1">Status</span>
-                    <span className="col-span-2 text-right">Time</span>
+                    <span className="col-span-2 text-right">Reported Time</span>
                   </div>
                   <div className="divide-y divide-border">
                     {incidents.length === 0 ? (
@@ -761,6 +762,8 @@ export function CivicSenseBoardPage() {
                       incidents.map((inc) => {
                         const verification = computeAiVerification(inc)
                         const imageSrc = getCategoryImage(inc.category, inc.image_path)
+                        const locationStr = inc.ward ? `Ward: ${inc.ward}` : `Lat: ${inc.latitude.toFixed(2)}, Lng: ${inc.longitude.toFixed(2)}`
+
                         return (
                           <div 
                             key={inc.id} 
@@ -782,16 +785,21 @@ export function CivicSenseBoardPage() {
                                 />
                               </div>
                             </div>
-                            <div className="col-span-4 pr-2">
+                            <div className="col-span-3 pr-2">
                               <span className="font-bold text-textPrimary block truncate text-xs">{inc.title}</span>
-                              <span className="text-[9px] text-textSecondary font-mono uppercase">{inc.ward || 'General Sector'}</span>
+                              <span className="text-[9px] text-textSecondary font-mono uppercase block">{locationStr}</span>
                             </div>
                             <div className="col-span-2">
                               <span className="text-[10px] font-bold text-info bg-info/10 px-2 py-0.5 border border-info/20 uppercase tracking-wider inline-block">
                                 {inc.category}
                               </span>
                             </div>
-                            <div className="col-span-1 font-mono font-bold text-resolved text-xs">
+                            <div className="col-span-1 font-mono">
+                              <span className={`text-[9px] font-bold px-1.5 py-0.5 uppercase tracking-wider ${inc.severity === 'Critical' ? 'text-critical' : inc.severity === 'High' ? 'text-high' : 'text-medium'}`}>
+                                {inc.severity}
+                              </span>
+                            </div>
+                            <div className="col-span-1 font-mono font-bold text-resolved text-xs text-center">
                               {verification.confidence}%
                             </div>
                             <div className="col-span-1">
