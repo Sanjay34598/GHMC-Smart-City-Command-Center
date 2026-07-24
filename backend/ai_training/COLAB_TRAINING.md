@@ -1,6 +1,6 @@
-# DisasterAI — Complete YOLOv11 Model Training Workflow
+# CityPulse AI — Complete YOLOv11 Model Training Workflow
 
-This document provides a comprehensive, end-to-end guide to preparing the dataset and training the custom YOLOv11 model for DisasterAI. It is optimised for a **Google Colab (T4 GPU)** environment to ensure fast, free training that fits within a 36-hour hackathon limit.
+This document provides a comprehensive, end-to-end guide to preparing the dataset and training the custom YOLOv11 model for CityPulse AI. It is optimised for a **Google Colab (T4 GPU)** environment to ensure fast, free training that fits within a 36-hour hackathon limit.
 
 ---
 

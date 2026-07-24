@@ -2,7 +2,7 @@
 
 ## System Architecture
 
-The GHMC Smart City Command Center leverages a modern, decoupled stack designed for rapid iteration, high performance, and robustness during offline demonstrations.
+The CityPulse AI — AI-Powered Smart City Command Center leverages a modern, decoupled stack designed for rapid iteration, high performance, and robustness during offline demonstrations.
 
 ### 1. Frontend Architecture
 - **Framework**: React 18 with Vite.

@@ -1,4 +1,4 @@
-# DisasterAI — Phase 1 Verification Report
+# CityPulse AI — Phase 1 Verification Report
 
 **Status:** Complete and working
 

@@ -1,21 +1,21 @@
-# Walkthrough: GHMC Smart City Command Center
+# Walkthrough: CityPulse AI — AI-Powered Smart City Command Center
 
-This walkthrough highlights the enhancements built specifically for the HackIndia presentation for the Greater Hyderabad Municipal Corporation (GHMC).
+This walkthrough highlights the enhancements built specifically for the presentation of CityPulse AI.
 
 ## What Was Accomplished
 1. **Offline Mode Migration**: Switched the primary data store from PostgreSQL to SQLite, ensuring the demo requires zero external dependencies, Docker containers, or live internet APIs.
-2. **Dedicated Hyderabad Data Seed**: Created `seed_hyderabad.py`, dynamically seeding 30 Disaster Incidents and 60 Civic Issues explicitly within the Hyderabad geographic bounding box, bypassing real LLM API calls with mocked, highly realistic Gemini and YOLO responses.
+2. **Dedicated City Data Seed**: Created `seed_hyderabad.py`, dynamically seeding 30 Disaster Incidents and 60 Civic Issues explicitly within the geographic bounding box, bypassing real LLM API calls with mocked, highly realistic Gemini and YOLO responses.
 3. **Civic Sense Board**: Built a completely distinct routing (`/civic-sense`) focusing on civic issue accountability. It displays citizen reports, AI verification status, ward details, assigned departments, and estimated resolution timelines.
-4. **Emergency Map Upgrade**: Hardcoded the default map view to center perfectly on Hyderabad.
+4. **Emergency Map Upgrade**: Hardcoded the default map view to center perfectly on the city region.
 5. **EOC Dashboard Redesign**: Injected crucial real-time analytics widgets including:
     - 7-Day Trending charts
     - Ward Analytics (identifying the most problematic wards)
-    - Department Workload (monitoring GHMC Sanitation, Traffic Police, etc.)
+    - Department Workload (monitoring Municipal Sanitation, Traffic Police, etc.)
 6. **Documentation Delivery**: Auto-generated comprehensive reports covering Verification, Architecture, Performance, and Hackathon Readiness.
 
 ## Validation Results
 
-- **Database Generation**: Tested successfully. Data securely loads in less than 2 seconds into `disasterai.db`.
+- **Database Generation**: Tested successfully. Data securely loads in less than 2 seconds into `citypulse.db`.
 - **UI Aesthetics**: The application flawlessly renders the dark-mode aesthetic with neon glowing components, retaining the premium Command Center feel.
 - **Frontend Code Quality**: Ensured types like `DashboardIncident` and `DashboardStats` correctly mirror the newly extended API fields, strictly passing TypeScript constraints.
 

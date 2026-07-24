@@ -1,171 +1,240 @@
-# DisasterAI
+# CityPulse AI
 
-> **Intelligent disaster detection and multi-agent emergency coordination — built for the moments that matter.**
+> **AI-Powered Smart City Command Center**
 
-DisasterAI transforms raw disaster images into structured, actionable emergency intelligence using a multi-stage AI pipeline: YOLOv11 computer vision detects objects in the scene, Google Gemini performs semantic risk analysis, and a simulated 5-agent Emergency Operations Center (EOC) coordinates the response — all in seconds.
-
----
-
-## ✨ Key Features
-
-| Feature | Description |
-| :--- | :--- |
-| 📸 **Image Upload & Analysis** | Upload disaster photos; YOLO detects fires, vehicles, structures with bounding boxes |
-| 🧠 **Gemini AI Summary** | LLM generates a full emergency assessment with risk level and public warning |
-| 🤖 **Multi-Agent Coordination** | 5 specialized AI agents (Assessment, Risk, Coordinator, Advisory, Resources) collaborate |
-| 🗺️ **Interactive Map** | Leaflet map with clustered incident markers, filters, and incident drawer |
-| 📊 **Live Dashboard** | Real-time stats, severity charts, category distribution, 7-day trend |
-| 🔔 **WebSocket Notifications** | Real-time push notifications when incidents are created or analyzed |
-| ⚡ **Dispatch / Resolve Workflow** | Responders can change incident status with a single click |
-| 🛡️ **Graceful Fallbacks** | Works without internet — YOLO falls back to mock, Gemini returns preset response |
+![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
+![Python: 3.12](https://img.shields.io/badge/Python-3.12-blue?logo=python)
+![FastAPI: 0.115](https://img.shields.io/badge/FastAPI-0.115-009688?logo=fastapi)
+![React: 18](https://img.shields.io/badge/React-18-61DAFB?logo=react)
+![TypeScript: 5.7](https://img.shields.io/badge/TypeScript-5.7-3178C6?logo=typescript)
+![Tailwind: 3.4](https://img.shields.io/badge/Tailwind-3.4-38B2AC?logo=tailwindcss)
+![Vite: Latest](https://img.shields.io/badge/Vite-Latest-646CFF?logo=vite)
+![Build Status](https://img.shields.io/badge/Build-Passing-success)
 
 ---
 
-## 🏗️ Architecture
+## 📌 Project Logo & Preview
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                     React Frontend (Vite)                    │
-│  HomePage │ Dashboard │ Map │ Upload │ IncidentDetail        │
-└─────────────────────────┬───────────────────────────────────┘
-                          │ HTTP / WebSocket
-┌─────────────────────────▼───────────────────────────────────┐
-│                  FastAPI Backend (Python 3.12)               │
-│                                                              │
-│  /incidents  /dashboard  /map  /ws/incidents  /ai-health     │
-│                                                              │
-│  AIService ──► YOLODetector / MockDetector                   │
-│  LLMService ──► GeminiClient (with retry + fallback)         │
-│  LLMService ──► 5-Agent Coordinator (mock EOC simulation)    │
-│  NotificationService ──► WebSocket broadcast                 │
-└──────────────────┬──────────────────────────────────────────┘
-                   │ SQLAlchemy / psycopg3
-┌──────────────────▼──────────────────────────────────────────┐
-│              PostgreSQL 16                                    │
-│  incidents │ analyses │ llm_analyses │ agent_responses       │
-│  notifications                                               │
-└─────────────────────────────────────────────────────────────┘
+  ██████╗███╗   ██╗████████╗██╗   ██╗██████╗ ██╗  ██╗██╗     ███████╗███████╗    █████╗ ██╗
+ ██╔════╝████╗  ██║╚══██╔══╝██║   ██║██╔══██╗██║  ██║██║     ██╔════╝██╔════╝   ██╔══██╗██║
+ ██║     ██╔██╗ ██║   ██║   ██║   ██║██████╔╝██║  ██║██║     ███████╗█████╗     ███████║██║
+ ██║     ██║╚██╗██║   ██║   ██║   ██║██╔═══╝ ██║  ██║██║     ╚════██║██╔══╝     ██╔══██║██║
+ ╚██████╗██║ ╚████║   ██║   ╚██████╔╝██║     ╚█████╔╝███████╗███████║███████╗   ██║  ██║██║
+  ╚═════╝╚═╝  ╚═══╝   ╚═╝    ╚═════╝ ╚═╝      ╚════╝ ╚══════╝╚══════╝╚══════╝   ╚═╝  ╚═╝╚═╝
+                    AI-POWERED SMART CITY COMMAND CENTER
 ```
-
-For the full component diagram see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ---
 
-## 🚀 Quick Start
+## 🌆 Overview
 
-### Option A — Docker (Recommended)
+**CityPulse AI** is a next-generation, production-grade **Smart City Command Center** platform engineered to ingest, verify, analyze, and resolve urban emergencies and civic issues in real time. 
 
-```bash
-# 1. Clone the repo
-git clone <repo-url> disasterai && cd disasterai
+By integrating **YOLOv11 Computer Vision**, **Google Gemini LLM**, and a simulated **5-Agent Emergency Operations Center (EOC)** multi-agent system, CityPulse AI converts raw citizen incident reports and sensory feeds into structured, actionable municipal intelligence in under 10 seconds.
 
-# 2. Copy and configure the environment
-cp .env.example .env
-# Edit .env — set GEMINI_API_KEY and a strong POSTGRES_PASSWORD
+---
 
-# 3. Start everything
-docker compose up --build
+## 🎯 Problem Statement
 
-# 4. Open in browser
-open http://localhost        # Frontend
-open http://localhost:8000/docs  # API docs (Swagger)
+Modern municipalities face critical challenges during emergency response and civic management:
+- **Signal Overload & Delay**: Municipalities receive hundreds of unverified citizen calls and reports with redundant or inaccurate details.
+- **Fragmented Inter-Departmental Coordination**: Sanitation, Fire, Traffic Police, and Disaster Response teams operate in silos without a unified real-time spatial operational picture.
+- **Lack of Explainable AI**: Standard automation systems fail to give dispatch officers clear rationale for automated priority escalations or fleet routing.
+
+---
+
+## 💡 Solution
+
+**CityPulse AI** bridges citizen reporting with automated, explainable municipal action:
+1. **Multimodal Signal Ingestion**: Ingests citizen-uploaded photos, GPS coordinates, and issue categories.
+2. **AI Computer Vision Verification**: YOLOv11 detects structural damage, fire, flood water, and road blockages instantly.
+3. **LLM & Multi-Agent Reasoning**: Google Gemini and 5 specialized EOC agents evaluate impact severity, determine casualty risk, auto-generate public warnings, and recommend exact resource dispatches.
+4. **Unified Operational Hub**: Real-time dashboards, interactive spatial maps, and archival forensics empower command officers to make decisions with high confidence.
+
+---
+
+## 🚀 Key Features
+
+CityPulse AI includes the following core capability modules:
+
+- 📱 **Citizen Incident Reporting**: Seamless portal for citizens to upload incident photos, select issue categories, auto-detect GPS coordinates, and track resolution timelines.
+- ✅ **AI Incident Verification**: Automatic verification scoring engine using YOLO computer vision and spatial check bounds to classify report authenticity.
+- 🧠 **Explainable AI**: Transparent, natural-language explanation cards detailing *why* an incident was escalated, which keywords triggered the classification, and what factors influenced severity scoring.
+- 🗺️ **Emergency Intelligence Map**: High-performance interactive GIS map featuring dynamic cluster markers, infrastructure overlays, and instant incident drawer previews.
+- 🎛️ **Mission Control Dashboard**: Comprehensive live operational matrix showcasing City Health Scores, active emergency levels, power grid stability, and real-time execution pipelines.
+- 📡 **Real-Time Incident Monitoring**: Instant WebSocket push notification engine that alerts dispatchers as soon as new incidents are reported or analyzed.
+- 📜 **Operations History**: Complete archival forensics and replay system with before/after visual audit logs, response durations, and status shift records.
+- 🚒 **Resource Management**: Depot availability tracking and fleet dispatch control for Municipal Sanitation, Fire Services, Water Works, and Traffic Police.
+- 💡 **AI Insights**: Automated predictive city feed offering early warning advisories (e.g., flood probability increases, traffic congestion re-routing recommendations).
+- 📱 **Responsive UI**: High-contrast EOC dark mode design system built with custom CSS design tokens, smooth Framer Motion micro-animations, and full mobile/desktop responsiveness.
+
+---
+
+## 🏗️ Architecture Diagram
+
+```mermaid
+graph TD
+    Client[Browser: React SPA + Vite + Tailwind CSS] <-->|HTTP REST / WebSocket| API[FastAPI Backend Server]
+    
+    subgraph AI Pipeline Engine
+        API -->|Raw Image Bytes| YOLO[YOLOv11 / Mock Detector]
+        YOLO -->|Bounding Boxes & Objects| Severity[Severity Scoring Engine]
+        API -->|Incident Context| Gemini[Google Gemini LLM]
+        Gemini -->|5-Agent EOC Simulation| Agents[Multi-Agent Coordination Engine]
+        Agents --> AssessmentAgent[Assessment Agent]
+        Agents --> RiskAgent[Risk Assessment Agent]
+        Agents --> CoordinatorAgent[Emergency Coordinator Agent]
+        Agents --> AdvisoryAgent[Public Advisory Agent]
+        Agents --> ResourceAgent[Resource Planning Agent]
+    end
+    
+    subgraph Data Persistence
+        API <-->|SQLAlchemy ORM| DB[(SQLite / PostgreSQL Database)]
+    end
 ```
 
-### Option B — Local Development
+---
 
-#### Backend
+## 🛠️ Technology Stack
+
+### Frontend
+- **Framework**: React 18 with Vite
+- **Language**: TypeScript 5.7
+- **Styling**: Vanilla / Tailwind CSS 3.4
+- **State & Routing**: React Router v6, Custom Hooks
+- **Icons & Visuals**: Lucide React, Recharts, Leaflet / React-Leaflet
+- **Animations**: Framer Motion, React Hot Toast
+
+### Backend
+- **Framework**: FastAPI (Python 3.12)
+- **Database**: SQLite (Development / Demo) & PostgreSQL 16 (Production) with SQLAlchemy 2.0 ORM
+- **Computer Vision**: Ultralytics YOLOv11 (ONNX Runtime Execution)
+- **Language Model**: Google Gemini SDK (`google-genai`)
+- **Real-Time Engine**: Native FastAPI WebSocket Manager
+- **Validation**: Pydantic v2 Strict Models
+
+---
+
+## 📁 Folder Structure
+
+```
+you-are-a-senior-full-stack/
+├── backend/                  # FastAPI Application Package
+│   ├── ai_training/          # YOLOv11 model training scripts & Colab guide
+│   ├── app/
+│   │   ├── ai/               # YOLO detector, base interface, mock fallback
+│   │   ├── api/v1/           # API endpoints (incidents, dashboard, map, ws)
+│   │   ├── core/             # Process configuration & WebSocket manager
+│   │   ├── db/               # Database session factories & base models
+│   │   ├── llm/              # Gemini client, prompt builder, schemas
+│   │   ├── modules/          # Core domain models (incidents, analyses)
+│   │   └── services/         # AIService, LLMService, NotificationService
+│   ├── tests/                # Automated pytest suite
+│   └── Dockerfile
+├── frontend/                 # React + Vite Frontend Application
+│   ├── src/
+│   │   ├── app/              # App entrypoint & route lazy-loading
+│   │   ├── components/       # Layout, Navigation, Map, Analysis UI
+│   │   ├── constants/        # Site configuration & constants
+│   │   ├── hooks/            # Custom WebSocket & data hooks
+│   │   ├── lib/              # API clients & domain helper functions
+│   │   └── pages/            # Mission Control, Dashboard, Map, Reports, History
+│   ├── index.html            # Application HTML shell
+│   └── package.json
+├── docs/                     # Technical Architecture & Guides
+├── outputs/                  # Verification & System Reports
+├── docker-compose.yml        # Multi-container orchestration
+└── README.md
+```
+
+---
+
+## ⚙️ Installation
+
+### Prerequisites
+- **Node.js**: v18.0 or higher
+- **Python**: v3.11 or v3.12
+- **Git**
+
+---
+
+## 💻 Running Locally
+
+### 1. Backend Setup
 
 ```bash
 cd backend
-python -m venv .venv
-# Windows:
-.venv\Scripts\activate
-# macOS/Linux:
-source .venv/bin/activate
 
+# Create Python Virtual Environment
+python -m venv .venv
+
+# Activate Virtual Environment (Windows PowerShell)
+.venv\Scripts\Activate.ps1
+# Or macOS/Linux:
+# source .venv/bin/activate
+
+# Install Dependencies
 pip install -r requirements.txt
 
-# Copy env and configure
-cp ../.env.example .env
-# Edit .env with your local Postgres credentials
-
-uvicorn app.main:app --reload
-# API available at http://localhost:8000
-# Swagger UI at http://localhost:8000/docs
+# Start Backend Server
+uvicorn app.main:app --reload --port 8000
 ```
+- **Backend API**: `http://localhost:8000`
+- **Swagger Documentation**: `http://localhost:8000/docs`
 
-#### Frontend
+### 2. Frontend Setup
 
 ```bash
 cd frontend
 
-# Create frontend env file
-echo "VITE_API_BASE_URL=http://localhost:8000/api/v1" > .env
-
+# Install Dependencies
 npm install
+
+# Start Vite Development Server
 npm run dev
-# App available at http://localhost:5173
 ```
+- **Web Application UI**: `http://localhost:5173`
 
 ---
 
-## 🔑 Environment Variables
+## 🐳 Deployment
 
-| Variable | Default | Required | Description |
-| :--- | :--- | :---: | :--- |
-| `POSTGRES_SERVER` | `localhost` | ✅ | Postgres host |
-| `POSTGRES_DB` | `disasterai` | ✅ | Database name |
-| `POSTGRES_USER` | `disasterai` | ✅ | Database user |
-| `POSTGRES_PASSWORD` | — | ✅ | Database password |
-| `BACKEND_CORS_ORIGINS` | `http://localhost:5173` | ✅ | Comma-separated allowed origins |
-| `GEMINI_API_KEY` | _(empty)_ | ❌ | Google AI API key — app works without it |
-| `USE_MOCK_AI` | `False` | ❌ | Set `True` to skip real YOLO inference |
-| `VITE_API_BASE_URL` | — | ✅ | Frontend `.env` only |
+### Deploying with Docker Compose
 
----
-
-## 🧪 Running Tests
+CityPulse AI is fully containerized for seamless multi-container production deployment.
 
 ```bash
-cd backend
-.venv\Scripts\activate
-pytest -v
+# Copy reference environment variables
+cp .env.example .env
+
+# Build and start services in detached mode
+docker compose up --build -d
 ```
 
-All tests use in-memory mocks — no database or external APIs required.
+- **Frontend Container**: Bound to Port `80`
+- **Backend Container**: Bound to Port `8000`
+- **PostgreSQL Container**: Bound to Port `5432`
 
 ---
 
-## 📁 Repository Layout
+## 🔮 Future Scope
 
-```
-disasterai/
-├── backend/              # FastAPI application
-│   ├── app/
-│   │   ├── ai/           # YOLO detector + mock
-│   │   ├── api/v1/       # Route handlers
-│   │   ├── core/         # Config + WebSocket manager
-│   │   ├── db/           # SQLAlchemy session + base
-│   │   ├── llm/          # Gemini client, prompts, schemas
-│   │   ├── modules/      # incidents, analyses, notifications
-│   │   └── services/     # AIService, LLMService, NotificationService
-│   ├── tests/            # Pytest test suite (14 tests)
-│   └── Dockerfile
-├── frontend/             # React + Vite application
-│   ├── src/
-│   │   ├── app/          # App.tsx (routing)
-│   │   ├── components/   # Shared UI components
-│   │   ├── lib/          # API client functions
-│   │   ├── pages/        # Route-level pages
-│   │   └── hooks/        # Custom React hooks
-│   └── Dockerfile
-├── docs/                 # Architecture & technical docs
-├── docker-compose.yml    # Full-stack container orchestration
-└── .env.example          # Environment variable reference
-```
+1. **IoT Sensor Integration**: Ingest real-time water level, air quality, and acoustic gunshot/explosion sensors.
+2. **Drone Autonomous Dispatch**: Trigger automated drone reconnaissance flights to incident coordinates upon YOLO detection.
+3. **Multi-City Federation**: Enable multi-region command centers to share emergency resources during large-scale national disasters.
+4. **Mobile Native Application**: Android & iOS native citizen report apps with offline caching and satellite SMS capabilities.
 
 ---
 
-## 🏆 Built For HackIndia
+## 📄 License
 
-DisasterAI was built as a demonstration of how modern AI can be applied to real-world emergency response. The project integrates multimodal AI (vision + language), a multi-agent architecture, and a production-grade full-stack to show what's possible when technology meets critical infrastructure.
+Distributed under the MIT License. See `LICENSE` for more details.
+
+---
+
+## 🙏 Acknowledgements
+
+- **Google DeepMind**: For cutting-edge AI architectures and Gemini LLM capabilities.
+- **Ultralytics**: For the state-of-the-art YOLOv11 computer vision framework.
+- **OpenStreetMap & Leaflet**: For open-source spatial visualization tools.

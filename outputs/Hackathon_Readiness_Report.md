@@ -1,7 +1,7 @@
 # Hackathon Readiness Report
 
 ## Executive Summary
-The GHMC Smart City Command Center project is fully primed and ready for the HackIndia showcase. All user requirements have been met, specifically tailoring the platform to the Greater Hyderabad Municipal Corporation context.
+The CityPulse AI — AI-Powered Smart City Command Center project is fully primed and ready for showcase. All requirements have been met, providing a complete smart city command center platform.
 
 ## Checklist
 
