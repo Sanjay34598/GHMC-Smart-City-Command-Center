@@ -10,8 +10,7 @@ const navLinks = [
   { name: 'Emergency Intelligence Map', to: '/map', icon: Map },
   { name: 'Operations History', to: '/history', icon: History },
   { name: 'Resource Command', to: '/resources', icon: Truck },
-  { name: 'AI Insights', to: '/#insights', icon: Sparkles },
-  { name: 'Settings', to: '/#settings', icon: SettingsIcon },
+  { name: 'AI City Intelligence', to: '/intelligence', icon: Sparkles },
 ]
 
 type RootLayoutProps = {

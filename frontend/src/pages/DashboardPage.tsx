@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { RootLayout } from '@/components/layout/RootLayout'
 import { AlertCircle, Clock, CheckCircle2, AlertTriangle, Truck, Crosshair, Users, Activity, Map as MapIcon } from 'lucide-react'
 import { getDashboardStats, getDashboardIncidents } from '@/lib/dashboard'
@@ -353,7 +353,9 @@ export function DashboardPage() {
             <h3 className="text-xs font-bold text-textPrimary uppercase tracking-widest flex items-center gap-2">
               <Activity className="size-4 text-info" /> AI City Insights
             </h3>
-            <span className="text-[9px] font-mono text-info uppercase tracking-wider bg-info/10 px-2 py-0.5 border border-info/20">Auto-Generated Predictive Feed</span>
+            <Link to="/intelligence" className="text-[9px] font-mono text-info uppercase tracking-wider bg-info/10 px-2 py-0.5 border border-info/20 hover:bg-info hover:text-white transition-colors">
+              Open Full Intelligence Matrix →
+            </Link>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 text-[10px] font-mono">

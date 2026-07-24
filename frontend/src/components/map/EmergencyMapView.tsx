@@ -235,7 +235,6 @@ export function EmergencyMapView({ incidents, services, showServices }: Props) {
           )
         })}
       </MarkerClusterGroup>
-      </MarkerClusterGroup>
 
       {/* Emergency service markers (shown on demand) */}
       {showServices &&
