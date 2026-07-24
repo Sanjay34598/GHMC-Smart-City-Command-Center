@@ -28,6 +28,9 @@ const OperationsHistoryPage = lazy(() =>
 const ResourceManagementPage = lazy(() =>
   import('@/pages/ResourceManagementPage').then((m) => ({ default: m.ResourceManagementPage }))
 )
+const AICityIntelligencePage = lazy(() =>
+  import('@/pages/AICityIntelligencePage').then((m) => ({ default: m.AICityIntelligencePage }))
+)
 
 // Minimal full-screen loading fallback shown during chunk download
 function PageLoader() {
@@ -50,6 +53,7 @@ export default function App() {
           <Route path="/map" element={<EmergencyMapPage />} />
           <Route path="/history" element={<OperationsHistoryPage />} />
           <Route path="/resources" element={<ResourceManagementPage />} />
+          <Route path="/intelligence" element={<AICityIntelligencePage />} />
           <Route path="/report-incident" element={<IncidentUploadPage />} />
           <Route path="/incidents/:id" element={<IncidentDetailPage />} />
           <Route path="*" element={<HomePage />} />

@@ -239,7 +239,7 @@ function CivicSenseContext({ incidents }: { incidents: Incident[] }) {
 }
 
 export function CivicSenseBoardPage() {
-  const [activeTab, setActiveTab] = useState<'feed' | 'map' | 'analytics'>('feed')
+  const [activeTab, setActiveTab] = useState<'feed' | 'latest' | 'analytics'>('feed')
   const [incidents, setIncidents] = useState<Incident[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -375,13 +375,13 @@ export function CivicSenseBoardPage() {
                 onClick={() => setActiveTab('feed')}
                 className={`px-4 py-1.5 text-[10px] font-bold uppercase flex items-center gap-2 ${activeTab === 'feed' ? 'bg-[#30363D] text-textPrimary' : 'text-textSecondary hover:bg-[#30363D]/50 hover:text-textPrimary'}`}
               >
-                <Activity className="size-3" /> Live Feed
+                <Activity className="size-3" /> Live Feed &amp; Report
               </button>
               <button 
-                onClick={() => setActiveTab('map')}
-                className={`px-4 py-1.5 text-[10px] font-bold uppercase flex items-center gap-2 ${activeTab === 'map' ? 'bg-[#30363D] text-textPrimary' : 'text-textSecondary hover:bg-[#30363D]/50 hover:text-textPrimary'}`}
+                onClick={() => setActiveTab('latest')}
+                className={`px-4 py-1.5 text-[10px] font-bold uppercase flex items-center gap-2 ${activeTab === 'latest' ? 'bg-[#30363D] text-textPrimary' : 'text-textSecondary hover:bg-[#30363D]/50 hover:text-textPrimary'}`}
               >
-                <MapIcon className="size-3" /> Spatial Map
+                <ShieldCheck className="size-3 text-info" /> Latest Citizen Reports
               </button>
               <button 
                 onClick={() => setActiveTab('analytics')}
@@ -735,14 +735,78 @@ export function CivicSenseBoardPage() {
               </div>
             )}
 
-            {/* MAP TAB */}
-            {activeTab === 'map' && (
-              <div className="absolute inset-0 bg-primary border border-border flex items-center justify-center relative overflow-hidden">
-                <div className="absolute inset-0 bg-[url('https://maps.wikimedia.org/osm-intl/12/2927/1825.png')] bg-cover bg-center opacity-20 grayscale"></div>
-                <div className="relative z-10 text-center bg-panel border border-border p-6 shadow-xl">
-                  <MapIcon className="size-8 text-textSecondary mx-auto mb-3" />
-                  <h2 className="text-sm font-bold uppercase tracking-widest text-textPrimary">Spatial Issue Tracker</h2>
-                  <p className="text-[10px] text-textSecondary mt-2 max-w-xs font-mono">Geospatial cluster view is currently active. Showing data for Kukatpally and Madhapur zones.</p>
+            {/* LATEST CITIZEN REPORTS TAB */}
+            {activeTab === 'latest' && (
+              <div className="absolute inset-0 overflow-y-auto space-y-4 pr-2 pb-12">
+                <div className="panel p-4 bg-[#161B22] border border-border flex items-center justify-between mb-2">
+                  <h3 className="text-xs font-bold text-textPrimary uppercase tracking-widest flex items-center gap-2">
+                    <ShieldCheck className="size-4 text-info" /> Verified Citizen Reports Log
+                  </h3>
+                  <span className="text-[10px] font-mono text-textSecondary uppercase">Total Reports: {incidents.length}</span>
+                </div>
+
+                <div className="panel overflow-hidden border border-border">
+                  <div className="grid grid-cols-12 text-[9px] font-bold text-textSecondary uppercase tracking-widest p-3 border-b border-border bg-[#1A202C]">
+                    <span className="col-span-2">Image</span>
+                    <span className="col-span-4">Title</span>
+                    <span className="col-span-2">Category</span>
+                    <span className="col-span-1">AI Conf.</span>
+                    <span className="col-span-1">Status</span>
+                    <span className="col-span-2 text-right">Time</span>
+                  </div>
+                  <div className="divide-y divide-border">
+                    {incidents.length === 0 ? (
+                      <div className="p-4 text-center text-xs font-mono text-textSecondary uppercase">No citizen reports available.</div>
+                    ) : (
+                      incidents.map((inc) => {
+                        const verification = computeAiVerification(inc)
+                        const imageSrc = getCategoryImage(inc.category, inc.image_path)
+                        return (
+                          <div 
+                            key={inc.id} 
+                            onClick={() => window.location.href = `/incidents/${inc.id}`}
+                            className="grid grid-cols-12 items-center p-3 text-xs bg-primary hover:bg-[#1A202C] transition-colors cursor-pointer"
+                          >
+                            <div className="col-span-2">
+                              <div className="w-16 h-12 border border-border bg-black relative overflow-hidden">
+                                <img 
+                                  src={imageSrc} 
+                                  alt={inc.title} 
+                                  className="w-full h-full object-cover"
+                                  onError={(e) => {
+                                    const fallback = getCategoryImage(inc.category)
+                                    if ((e.target as HTMLImageElement).src !== fallback) {
+                                      (e.target as HTMLImageElement).src = fallback
+                                    }
+                                  }}
+                                />
+                              </div>
+                            </div>
+                            <div className="col-span-4 pr-2">
+                              <span className="font-bold text-textPrimary block truncate text-xs">{inc.title}</span>
+                              <span className="text-[9px] text-textSecondary font-mono uppercase">{inc.ward || 'General Sector'}</span>
+                            </div>
+                            <div className="col-span-2">
+                              <span className="text-[10px] font-bold text-info bg-info/10 px-2 py-0.5 border border-info/20 uppercase tracking-wider inline-block">
+                                {inc.category}
+                              </span>
+                            </div>
+                            <div className="col-span-1 font-mono font-bold text-resolved text-xs">
+                              {verification.confidence}%
+                            </div>
+                            <div className="col-span-1">
+                              <span className={`text-[9px] font-bold px-1.5 py-0.5 uppercase tracking-wider ${inc.status === 'resolved' ? 'bg-resolved/10 text-resolved border border-resolved/20' : 'bg-high/10 text-high border border-high/20'}`}>
+                                {inc.status}
+                              </span>
+                            </div>
+                            <div className="col-span-2 text-right font-mono text-textSecondary text-[10px]">
+                              {new Date(inc.created_at).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}
+                            </div>
+                          </div>
+                        )
+                      })
+                    )}
+                  </div>
                 </div>
               </div>
             )}

@@ -52,19 +52,25 @@ function makeDivIcon(emoji: string, color: string): L.DivIcon {
 
 // ─── Auto-fit bounds helper ───────────────────────────────────────────────────
 
-function AutoFit() {
+function AutoFit({ incidents }: { incidents: MapIncident[] }) {
   const map = useMap()
   const fitted = useRef(false)
 
   useEffect(() => {
-    if (fitted.current) return
-    const bounds = L.latLngBounds([
-      [17.3850 - 0.15, 78.4867 - 0.15],
-      [17.3850 + 0.15, 78.4867 + 0.15]
-    ])
-    map.fitBounds(bounds, { padding: [40, 40], maxZoom: 12 })
-    fitted.current = true
-  }, [map])
+    if (fitted.current || !incidents || incidents.length === 0) return
+    const validPoints = incidents
+      .map(i => [
+        typeof i.latitude === 'number' ? i.latitude : parseFloat(i.latitude as unknown as string),
+        typeof i.longitude === 'number' ? i.longitude : parseFloat(i.longitude as unknown as string)
+      ] as [number, number])
+      .filter(([lat, lng]) => !isNaN(lat) && !isNaN(lng) && (lat !== 0 || lng !== 0))
+
+    if (validPoints.length > 0) {
+      const bounds = L.latLngBounds(validPoints)
+      map.fitBounds(bounds, { padding: [50, 50], maxZoom: 14 })
+      fitted.current = true
+    }
+  }, [map, incidents])
 
   return null
 }
@@ -90,7 +96,10 @@ function IncidentPopup({ inc }: { inc: MapIncident }) {
           alt={inc.title}
           className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
           onError={(e) => {
-            (e.target as HTMLImageElement).src = getCategoryImage(inc.category)
+            const fallback = getCategoryImage(inc.category)
+            if ((e.target as HTMLImageElement).src !== fallback) {
+              (e.target as HTMLImageElement).src = fallback
+            }
           }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
@@ -194,7 +203,7 @@ export function EmergencyMapView({ incidents, services, showServices }: Props) {
       />
 
       {/* Auto-fit to incidents on first load */}
-      <AutoFit />
+      <AutoFit incidents={incidents} />
 
       {/* Clustered incident markers */}
       <MarkerClusterGroup
@@ -202,23 +211,30 @@ export function EmergencyMapView({ incidents, services, showServices }: Props) {
         maxClusterRadius={60}
         showCoverageOnHover={false}
       >
-        {incidents.map((inc) => (
-          <CircleMarker
-            key={inc.id}
-            center={[inc.latitude, inc.longitude]}
-            radius={inc.severity === 'Critical' ? 15 : inc.severity === 'High' ? 12 : 9}
-            pathOptions={{
-              color:       SEVERITY_COLOR[inc.severity] ?? '#64748b',
-              fillColor:   SEVERITY_COLOR[inc.severity] ?? '#64748b',
-              fillOpacity: 0.8,
-              weight:      2.5,
-            }}
-          >
-            <Popup maxWidth={280}>
-              <IncidentPopup inc={inc} />
-            </Popup>
-          </CircleMarker>
-        ))}
+        {incidents.map((inc) => {
+          const lat = typeof inc.latitude === 'number' ? inc.latitude : parseFloat(inc.latitude as unknown as string)
+          const lng = typeof inc.longitude === 'number' ? inc.longitude : parseFloat(inc.longitude as unknown as string)
+          if (isNaN(lat) || isNaN(lng)) return null
+
+          return (
+            <CircleMarker
+              key={inc.id}
+              center={[lat, lng]}
+              radius={inc.severity === 'Critical' ? 15 : inc.severity === 'High' ? 12 : 9}
+              pathOptions={{
+                color:       SEVERITY_COLOR[inc.severity] ?? '#64748b',
+                fillColor:   SEVERITY_COLOR[inc.severity] ?? '#64748b',
+                fillOpacity: 0.8,
+                weight:      2.5,
+              }}
+            >
+              <Popup maxWidth={280}>
+                <IncidentPopup inc={inc} />
+              </Popup>
+            </CircleMarker>
+          )
+        })}
+      </MarkerClusterGroup>
       </MarkerClusterGroup>
 
       {/* Emergency service markers (shown on demand) */}

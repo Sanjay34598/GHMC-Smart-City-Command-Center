@@ -67,10 +67,15 @@ export async function getAnalysis(incidentId: string): Promise<AnalysisResult | 
 
 /**
  * Compute the full URL for a stored incident image.
- * Derives the backend origin from VITE_API_BASE_URL so both values stay in sync.
+ * Derives the backend origin from API_BASE_URL so both values stay in sync.
  */
-export function getImageUrl(imagePath: string): string {
+export function getImageUrl(imagePath: string | null | undefined): string {
+  if (!imagePath || !imagePath.trim()) return ''
+  const trimmed = imagePath.trim()
+  if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+    return trimmed
+  }
   const origin = API_BASE_URL.replace(/\/api\/v1\/?$/, '')
-  const cleanPath = imagePath.startsWith('/') ? imagePath.slice(1) : imagePath
+  const cleanPath = trimmed.replace(/^\/+/, '')
   return `${origin}/${cleanPath}`
 }

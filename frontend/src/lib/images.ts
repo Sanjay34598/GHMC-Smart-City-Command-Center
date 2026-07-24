@@ -32,9 +32,10 @@ const CATEGORY_IMAGE_MAP: Record<string, string> = {
 }
 
 export function getCategoryImage(category: string, userImagePath?: string | null): string {
-  // 1. If an uploaded image exists from citizen report (and is not demo_placeholder), return backend URL
-  if (userImagePath && userImagePath.trim() && !userImagePath.includes('demo_placeholder')) {
-    return getImageUrl(userImagePath)
+  // 1. If an image path is provided by backend response, construct full backend URL via getImageUrl
+  if (userImagePath && userImagePath.trim()) {
+    const fullUrl = getImageUrl(userImagePath)
+    if (fullUrl) return fullUrl
   }
 
   // 2. Otherwise automatically display matching category image from assets
