@@ -135,7 +135,7 @@ function getAiCommandDecision(inc: Incident) {
   
   let estResponse = '8 Minutes'
   let estResolution = '25 Minutes'
-  let depts = ['GHMC Rapid Response', 'Local Ward Office']
+  let depts = ['Municipal Rapid Response', 'Local Ward Office']
   let actions = ['✓ Verify report coordinates', '✓ Dispatch field inspector', '✓ Update zone log']
 
   if (inc.category === 'Fire' || inc.category === 'Building Collapse') {
@@ -146,7 +146,7 @@ function getAiCommandDecision(inc: Incident) {
   } else if (inc.category === 'Accident' || inc.category === 'Road Block') {
     estResponse = '6 Minutes'
     estResolution = '20 Minutes'
-    depts = ['Traffic Police', 'GHMC Engineering', 'Ambulance']
+    depts = ['Traffic Police', 'Municipal Engineering', 'Ambulance']
     actions = ['✓ Alert traffic control tower', '✓ Re-route regional traffic', '✓ Clear road debris']
   } else if (inc.category === 'Flood' || inc.category === 'Water Leak') {
     estResponse = '10 Minutes'
@@ -366,7 +366,7 @@ export function CivicSenseBoardPage() {
           
           <header className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-border pb-4 shrink-0">
             <div>
-              <h1 className="text-3xl font-black uppercase tracking-tight text-textPrimary">Civic Sense</h1>
+              <h1 className="text-3xl font-black uppercase tracking-tight text-textPrimary">Citizen Incident Reports</h1>
               <p className="text-xs font-bold text-textSecondary uppercase tracking-widest mt-1">Operational Citizen Report Feed</p>
             </div>
             

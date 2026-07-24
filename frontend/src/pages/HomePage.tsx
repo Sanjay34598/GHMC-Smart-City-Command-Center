@@ -15,7 +15,7 @@ const cityIntelligence = [
 
 const aiRecommendations = [
   "High flood probability in LB Nagar. Recommend shifting 4 additional pump units from Secunderabad.",
-  "Traffic congestion expected near Hitech City. Suggesting dynamic rerouting of GHMC sanitation fleets."
+  "Traffic congestion expected near Hitech City. Suggesting dynamic rerouting of municipal sanitation fleets."
 ]
 
 // Pipeline steps for Wow Moment animation
@@ -107,7 +107,7 @@ export function HomePage() {
         
         <header className="border-b border-border pb-4">
           <h1 className="text-3xl font-black uppercase tracking-tight text-textPrimary">Mission Control</h1>
-          <p className="text-xs font-bold text-textSecondary uppercase tracking-widest mt-1">Live Operations Overview • Greater Hyderabad</p>
+          <p className="text-xs font-bold text-textSecondary uppercase tracking-widest mt-1">Live Operations Overview • CityPulse AI Command Center</p>
         </header>
 
         {/* City Overview Matrix */}

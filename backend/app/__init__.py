@@ -1,1 +1,1 @@
-"""DisasterAI API application package."""
+"""CityPulse AI API application package."""

@@ -78,7 +78,7 @@ function deriveAssignments(incidents: DashboardIncident[]): OfficerAssignment[] 
   const rows: OfficerAssignment[] = []
 
   for (const inc of assigned) {
-    const dept = inc.department ?? 'GHMC'
+    const dept = inc.department ?? 'City Operations'
     if (seen.has(dept)) continue
     seen.add(dept)
 
@@ -301,7 +301,7 @@ export function DashboardPage() {
             </div>
             <div className="bg-primary p-2 border border-border col-span-2 md:col-span-1">
               <span className="text-[8px] font-bold text-textSecondary uppercase tracking-widest block">Command Hub</span>
-              <span className="text-xs font-bold text-info block mt-0.5">GHMC Central</span>
+              <span className="text-xs font-bold text-info block mt-0.5">CityPulse Central</span>
             </div>
           </div>
         </section>

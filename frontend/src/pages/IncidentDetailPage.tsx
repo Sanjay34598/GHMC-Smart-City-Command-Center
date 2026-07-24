@@ -250,7 +250,7 @@ export function IncidentDetailPage() {
                     <span className="text-[10px] font-bold text-textPrimary flex items-center gap-1 uppercase tracking-wider"><Users className="size-3 text-textSecondary" /> System Auto-Routing</span>
                     <span className="text-[9px] text-textSecondary font-mono">10:45 AM</span>
                   </div>
-                  <p className="text-xs text-textSecondary">Assigned incident to {incident.department || 'GHMC Department'} based on LLM classification.</p>
+                  <p className="text-xs text-textSecondary">Assigned incident to {incident.department || 'Municipal Department'} based on LLM classification.</p>
                 </div>
                 
                 <div className="border border-border bg-primary p-3">

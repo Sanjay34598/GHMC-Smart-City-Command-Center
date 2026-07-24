@@ -1,7 +1,7 @@
 import { Activity, BrainCircuit, MapPinned, Radio, ShieldCheck, Workflow } from 'lucide-react'
 import { API_BASE_URL, WS_BASE_URL } from '@/lib/api'
 
-export const siteConfig = { name: 'DisasterAI', description: 'Intelligent disaster detection and emergency response.', navigation: [{ label: 'Dashboard', href: 'dashboard' }, { label: 'Emergency Map', href: 'map' }, { label: 'Capabilities', href: '#capabilities' }, { label: 'Technology', href: '#technology' }] }
+export const siteConfig = { name: 'CityPulse AI', description: 'AI-Powered Smart City Command Center', navigation: [{ label: 'Dashboard', href: 'dashboard' }, { label: 'Emergency Map', href: 'map' }, { label: 'Capabilities', href: '#capabilities' }, { label: 'Technology', href: '#technology' }] }
 
 export const features = [
   { icon: BrainCircuit, title: 'Detection intelligence', description: 'A future-ready foundation for computer vision and multimodal signals to surface emerging threats.' },

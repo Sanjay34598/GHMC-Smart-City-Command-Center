@@ -6,13 +6,13 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     """Typed process configuration loaded from environment variables."""
 
-    PROJECT_NAME: str = "GHMC Disaster Management AI"
+    PROJECT_NAME: str = "CityPulse AI — Smart City Command Center"
     VERSION: str = "0.1.0"
     API_V1_PREFIX: str = "/api/v1"
     POSTGRES_SERVER: str = "localhost"
     POSTGRES_PORT: int = 5432
-    POSTGRES_DB: str = "disasterai"
-    POSTGRES_USER: str = "disasterai"
+    POSTGRES_DB: str = "citypulse"
+    POSTGRES_USER: str = "citypulse"
     POSTGRES_PASSWORD: str = "change-me"
     BACKEND_CORS_ORIGINS: str = "http://localhost:5173"
 
@@ -26,7 +26,7 @@ class Settings(BaseSettings):
 
     # AI detection module configuration
     # These values flow into MockDetector now and YOLODetector in Phase 3.
-    AI_MODEL_NAME: str = "YOLOv11-Disaster"
+    AI_MODEL_NAME: str = "YOLOv11-CityPulse"
     AI_MODEL_VERSION: str = "1.0.0"
     AI_CONFIDENCE_THRESHOLD: float = 0.5
     AI_MODEL_PATH: str = "models/best.onnx"
@@ -41,7 +41,7 @@ class Settings(BaseSettings):
 
     @property
     def database_url(self) -> str:
-        return "sqlite:///./disasterai.db"
+        return "sqlite:///./citypulse.db"
 
     @property
     def cors_origins(self) -> list[str]:

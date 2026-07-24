@@ -2,7 +2,7 @@ import { RootLayout } from '@/components/layout/RootLayout'
 import { Truck, Settings2, AlertTriangle, ShieldCheck, Cpu, Droplets, Flame, Package } from 'lucide-react'
 
 const resources = [
-  { name: 'GHMC Sanitation', total: 45, active: 38, icon: Truck, color: 'text-info' },
+  { name: 'Municipal Sanitation', total: 45, active: 38, icon: Truck, color: 'text-info' },
   { name: 'HMWSSB Repair', total: 12, active: 11, icon: Droplets, color: 'text-medium' },
   { name: 'Traffic Police', total: 80, active: 65, icon: ShieldCheck, color: 'text-high' },
   { name: 'TFS Fire Engines', total: 24, active: 4, icon: Flame, color: 'text-critical' },
@@ -64,7 +64,7 @@ export function ResourceManagementPage() {
         <header className="border-b border-border pb-4 flex justify-between items-end">
           <div>
             <h1 className="text-3xl font-black uppercase tracking-tight text-textPrimary flex items-center gap-3">
-              Resource Management
+              Resource Command
             </h1>
             <p className="text-xs font-bold text-textSecondary uppercase tracking-widest mt-1">Live Deployment & Personnel Tracking</p>
           </div>
@@ -141,7 +141,7 @@ export function ResourceManagementPage() {
                 <tbody className="divide-y divide-border">
                   <tr className="hover:bg-[#30363D] transition-colors cursor-pointer" onClick={() => window.location.href = '/incidents/INC-811'}>
                     <td className="p-3 font-mono text-info text-[10px]">U-1042</td>
-                    <td className="p-3 text-textPrimary font-bold">GHMC Sanitation</td>
+                    <td className="p-3 text-textPrimary font-bold">Municipal Sanitation</td>
                     <td className="p-3 text-textSecondary font-mono text-[10px]">INC-811 (Charminar)</td>
                     <td className="p-3"><span className="border border-high/30 bg-high/10 text-high text-[9px] font-bold px-2 py-0.5 uppercase tracking-widest">En Route</span></td>
                   </tr>

@@ -25,7 +25,7 @@ class YOLODetector(BaseDetector):
     """
 
     # We set these manually as required by the interface
-    _model_name = "YOLOv11-Disaster"
+    _model_name = "YOLOv11-CityPulse"
     _model_version = "1.0.0"
     
     def __init__(self):
