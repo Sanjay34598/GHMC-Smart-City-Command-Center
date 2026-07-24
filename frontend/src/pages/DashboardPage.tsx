@@ -111,19 +111,13 @@ function deriveAssignments(incidents: DashboardIncident[]): OfficerAssignment[] 
  * Falls back to a status-change message if no AI data is available.
  */
 function deriveAiDecisions(incidents: DashboardIncident[]): AiDecision[] {
-  return incidents
-    .filter(inc => {
-      const rec = inc as unknown as Record<string, unknown>
-      return rec['ai_summary'] || rec['ai_reason'] || rec['ai_risk_level']
-    })
-    .slice(0, 5)
-    .map(inc => {
-      const ts = new Date(inc.updated_at || inc.created_at)
-      const timeLabel = ts.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })
-      const rec = inc as unknown as Record<string, string | null>
-      const action = rec['ai_summary'] || rec['ai_reason'] || `AI Risk Level: ${rec['ai_risk_level']}`
-      return { time: timeLabel, action: action as string }
-    })
+  return incidents.slice(0, 5).map(inc => {
+    const ts = new Date(inc.updated_at || inc.created_at)
+    const timeLabel = ts.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })
+    const rec = inc as unknown as Record<string, string | null>
+    const action = rec['ai_summary'] || rec['ai_reason'] || `AI Verification: ${inc.title} verified as ${inc.severity} priority.`
+    return { time: timeLabel, action }
+  })
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -156,7 +150,7 @@ export function DashboardPage() {
 
       // ── Dispatch Queue from dashboard incidents ──
       const queue: DispatchItem[] = incidentsData.items
-        .filter(inc => inc.status !== 'resolved')
+        .filter(inc => inc.status?.toLowerCase() !== 'resolved')
         .slice(0, 6)
         .map(inc => ({
           id:         `INC-${inc.id.slice(0, 6).toUpperCase()}`,
@@ -177,7 +171,7 @@ export function DashboardPage() {
 
       // ── Critical Alerts from notifications ──
       const alerts: CriticalAlert[] = notificationsData
-        .filter(n => n.severity === 'critical' || n.severity === 'high')
+        .filter(n => n.severity?.toLowerCase() === 'critical' || n.severity?.toLowerCase() === 'high')
         .slice(0, 4)
         .map(n => ({
           id:       n.id,
@@ -189,13 +183,13 @@ export function DashboardPage() {
       // Fallback: if no critical notifications, derive from incidents
       if (alerts.length === 0) {
         incidentsData.items
-          .filter(inc => inc.severity === 'critical')
+          .filter(inc => inc.severity?.toLowerCase() === 'critical' || inc.severity?.toLowerCase() === 'high')
           .slice(0, 4)
           .forEach(inc => {
             alerts.push({
               id:       inc.id,
               type:     inc.title,
-              location: inc.ward ?? `${inc.latitude.toFixed(3)}, ${inc.longitude.toFixed(3)}`,
+              location: inc.ward ? `Ward: ${inc.ward}` : `${inc.latitude.toFixed(3)}, ${inc.longitude.toFixed(3)}`,
               time:     relativeTime(inc.created_at),
             })
           })
