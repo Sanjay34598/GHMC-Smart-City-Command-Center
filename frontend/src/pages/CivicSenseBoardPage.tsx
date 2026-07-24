@@ -151,7 +151,7 @@ function getAiCommandDecision(inc: Incident) {
   } else if (inc.category === 'Flood' || inc.category === 'Water Leak') {
     estResponse = '10 Minutes'
     estResolution = '35 Minutes'
-    depts = ['HMWS&SB Water Works', 'Disaster Response Force (DRF)']
+    depts = ['HMWS&SB Water Works', 'Emergency Response Force (ERF)']
     actions = ['✓ Isolate water main valve', '✓ Deploy heavy water pumps', '✓ Issue ward advisory']
   }
 

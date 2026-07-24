@@ -1,10 +1,10 @@
-# DisasterAI — Judge Guide
+# CityPulse AI — Judge Guide
 
 Welcome. This guide summarizes the technical achievements and judging evidence.
 
 ## Quick Summary
 
-DisasterAI is an **end-to-end, production-grade** AI emergency coordination platform. It converts a disaster photo into a structured multi-agent response in seconds.
+CityPulse AI is an **end-to-end, production-grade** AI emergency coordination platform. It converts a disaster photo into a structured multi-agent response in seconds.
 
 ## Evidence by Judging Criterion
 

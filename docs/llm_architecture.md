@@ -1,6 +1,6 @@
 # LLM Service Architecture (Phase B)
 
-The DisasterAI Phase B architecture introduces Google Gemini to perform structured emergency intelligence analysis. This document outlines how the system is designed to allow replacing Gemini with any other LLM provider (such as OpenAI, Anthropic, or Azure) in the future.
+The CityPulse AI Phase B architecture introduces Google Gemini to perform structured emergency intelligence analysis. This document outlines how the system is designed to allow replacing Gemini with any other LLM provider (such as OpenAI, Anthropic, or Azure) in the future.
 
 ## Layered Isolation
 

@@ -1,8 +1,8 @@
-# DisasterAI — Demo Guide
+# CityPulse AI — Demo Guide
 
 ## Overview
 
-DisasterAI includes a fully scripted demo mode designed for hackathon presentations. The application works completely offline — no API keys or internet connection required.
+CityPulse AI includes a fully scripted demo mode designed for hackathon presentations. The application works completely offline — no API keys or internet connection required.
 
 ## Pre-Demo Setup (2 minutes)
 

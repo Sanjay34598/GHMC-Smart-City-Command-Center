@@ -1,8 +1,8 @@
-# DisasterAI — Architecture
+# CityPulse AI — Architecture
 
 ## System Overview
 
-DisasterAI is built with a decoupled, three-tier architecture optimised for AI-heavy, event-driven workflows.
+CityPulse AI is built with a decoupled, three-tier architecture optimised for AI-heavy, event-driven workflows.
 
 ```
 ┌────────────────────────────────────────────────────────────────┐

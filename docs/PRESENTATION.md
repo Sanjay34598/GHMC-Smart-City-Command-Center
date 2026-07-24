@@ -1,4 +1,4 @@
-# DisasterAI — Presentation Script
+# CityPulse AI — Presentation Script
 
 **Duration:** 4 minutes 30 seconds  
 **Speaker:** Team lead  
@@ -10,7 +10,7 @@
 
 *Open the landing page.*
 
-> "Every second counts when disaster strikes. When a building collapses, a fire spreads, or a flood sweeps through a city — emergency dispatchers need clarity immediately. Today we present DisasterAI: an intelligent multi-agent platform that transforms a disaster photograph into a fully coordinated emergency response in under 10 seconds."
+> "Every second counts when disaster strikes. When a building collapses, a fire spreads, or a flood sweeps through a city — emergency dispatchers need clarity immediately. Today we present CityPulse AI: an intelligent multi-agent platform that transforms a disaster photograph into a fully coordinated emergency response in under 10 seconds."
 
 ---
 
@@ -38,7 +38,7 @@
 
 *Scroll to the AI Coordination Panel.*
 
-> "This is where DisasterAI goes beyond a single chatbot. We deploy a 5-agent Emergency Operations Center."
+> "This is where CityPulse AI goes beyond a single chatbot. We deploy a 5-agent Emergency Operations Center."
 
 *Point to each card.*
 
@@ -68,7 +68,7 @@
 
 *Return to Dashboard.*
 
-> "DisasterAI is production-ready. It runs entirely in Docker with a single command. It degrades gracefully without an API key. It has 14 passing tests and full Swagger documentation. But most importantly, it gives emergency responders the one thing they need most: clarity under pressure. Thank you."
+> "CityPulse AI is production-ready. It runs entirely in Docker with a single command. It degrades gracefully without an API key. It has 14 passing tests and full Swagger documentation. But most importantly, it gives emergency responders the one thing they need most: clarity under pressure. Thank you."
 
 ---
 
